@@ -1,13 +1,6 @@
 import { LabelList, Pie, PieChart } from "recharts";
 
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
     ChartContainer,
     ChartTooltip,
@@ -75,8 +68,10 @@ export function ChartPieLabelList() {
                                 stroke="none"
                                 fontSize={12}
                                 position="inside"
-                                formatter={(value: keyof typeof chartConfig) =>
-                                    chartConfig[value]?.label
+                                formatter={(value: any) =>
+                                    chartConfig[
+                                        value as keyof typeof chartConfig
+                                    ]?.label
                                 }
                             />
                         </Pie>

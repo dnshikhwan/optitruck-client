@@ -28,7 +28,6 @@ import { type TFunction } from "i18next";
 import { format } from "date-fns";
 import { Edit, Eye, MoreHorizontal, Trash } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 
 export const createDeliveryJobColumns = (
     t: TFunction,

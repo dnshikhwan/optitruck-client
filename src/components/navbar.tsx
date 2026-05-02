@@ -82,7 +82,9 @@ export function Navbar() {
                                         if (auth.hasRole("manager")) {
                                             navigate({ to: "/manager" });
                                         } else {
-                                            navigate({ to: "/driver" });
+                                            navigate({
+                                                to: "/driver/active-assignments",
+                                            });
                                         }
                                     }}
                                     className="bg-primary text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:bg-orange-500 hover:-translate-y-0.5 active:translate-y-0 transition-all"
