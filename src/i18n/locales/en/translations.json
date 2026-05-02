@@ -376,5 +376,21 @@
         "ms": "{{value}} ms",
         "s": "{{value}} s",
         "min": "{{value}} min"
-    }
+    },
+    "onboarding_welcome_title": "Welcome to OptiTruck!",
+    "onboarding_welcome_content": "You're all set up. Let's take a quick tour so you can hit the ground running.",
+    "onboarding_dashboard_title": "Your Dashboard",
+    "onboarding_dashboard_content": "See active trucks, unassigned shipments, and packing efficiency at a glance.",
+    "onboarding_setup_warehouse_title": "Set Up Your Warehouse",
+    "onboarding_setup_warehouse_content": "Before creating jobs, set your warehouse location — the origin point for all your deliveries.",
+    "onboarding_warehouse_title": "Warehouse",
+    "onboarding_warehouse_content": "Add your warehouse address here. OptiTruck uses this to calculate optimal routes.",
+    "onboarding_trucks_title": "Manage Your Trucks",
+    "onboarding_trucks_content": "Add your fleet here. Each truck has its own dimensions and capacity used for bin-packing optimization.",
+    "onboarding_shipments_title": "Create Shipments",
+    "onboarding_shipments_content": "Shipments are your cargo — each one has dimensions and weight. OptiTruck packs them optimally.",
+    "onboarding_delivery_job_title": "Create a Delivery Job",
+    "onboarding_delivery_job_content": "Assign shipments to a truck and OptiTruck handles the packing and routing automatically.",
+    "onboarding_done_title": "You're ready!",
+    "onboarding_done_content": "Start by adding your warehouse, then your trucks, then create your first delivery job."
 }

@@ -384,5 +384,21 @@
         "ms": "{{value}} мс",
         "s": "{{value}} с",
         "min": "{{value}} мин"
-    }
+    },
+    "onboarding_welcome_title": "Добро пожаловать в OptiTruck!",
+    "onboarding_welcome_content": "Вы зарегистрированы. Давайте быстро ознакомимся с системой.",
+    "onboarding_dashboard_title": "Ваша панель управления",
+    "onboarding_dashboard_content": "Здесь отображаются активные грузовики, неназначенные отправления и эффективность упаковки.",
+    "onboarding_setup_warehouse_title": "Настройте склад",
+    "onboarding_setup_warehouse_content": "Перед созданием заданий укажите адрес склада — отправную точку всех доставок.",
+    "onboarding_warehouse_title": "Склад",
+    "onboarding_warehouse_content": "Добавьте адрес склада. OptiTruck использует его для расчёта оптимальных маршрутов.",
+    "onboarding_trucks_title": "Управление грузовиками",
+    "onboarding_trucks_content": "Добавьте свой автопарк. Каждый грузовик имеет свои габариты и грузоподъёмность для оптимизации упаковки.",
+    "onboarding_shipments_title": "Создание отправлений",
+    "onboarding_shipments_content": "Отправления — это ваш груз. Каждое имеет размеры и вес. OptiTruck упаковывает их оптимально.",
+    "onboarding_delivery_job_title": "Создание задания на доставку",
+    "onboarding_delivery_job_content": "Назначьте отправления грузовику — OptiTruck автоматически рассчитает упаковку и маршрут.",
+    "onboarding_done_title": "Вы готовы к работе!",
+    "onboarding_done_content": "Начните с добавления склада, затем грузовиков, а потом создайте первое задание на доставку."
 }

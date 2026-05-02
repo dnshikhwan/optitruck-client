@@ -86,7 +86,7 @@ function IndexDashboard() {
         () => [
             {
                 icon: <TruckIcon className="size-4" />,
-                value: "1",
+                value: "0",
                 title: t("total_delivery_jobs"),
                 description: t("daily_delivery_jobs_desc"),
             },
@@ -120,7 +120,7 @@ function IndexDashboard() {
 
     return (
         <DashboardLayout>
-            <div>
+            <div id="dashboard-header">
                 <h1 className="scroll-m-20 font-heading font-extrabold text-xl">
                     {t("welcome_back")}, {auth.user?.first_name}{" "}
                     {auth.user?.last_name}
@@ -141,7 +141,7 @@ function IndexDashboard() {
                     </Stat>
                 ))}
             </div>
-            <div className="flex items-stretch gap-4">
+            <div id="main-content" className="flex items-stretch gap-4">
                 <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>{t("latest_shipment")}</CardTitle>

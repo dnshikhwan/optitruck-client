@@ -901,7 +901,7 @@ function Trucks() {
                 ))}
             </div>
             <div>
-                <Card>
+                <Card id="trucks-table">
                     <CardContent>
                         <DataTable
                             columns={truckColumns}
