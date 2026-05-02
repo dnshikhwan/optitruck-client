@@ -333,7 +333,7 @@ function Trucks() {
                                                         data-invalid={isInvalid}
                                                     >
                                                         <FieldLabel>
-                                                            Model
+                                                            {t("model")}
                                                         </FieldLabel>
                                                         <Input
                                                             name={field.name}
@@ -381,7 +381,7 @@ function Trucks() {
                                                         data-invalid={isInvalid}
                                                     >
                                                         <FieldLabel>
-                                                            License Plate
+                                                            {t("license_plate")}
                                                         </FieldLabel>
                                                         <Input
                                                             name={field.name}
@@ -431,7 +431,7 @@ function Trucks() {
                                                         data-invalid={isInvalid}
                                                     >
                                                         <FieldLabel>
-                                                            Length (cm)
+                                                            {t("length_cm")}
                                                         </FieldLabel>
                                                         <Input
                                                             name={field.name}
@@ -487,7 +487,7 @@ function Trucks() {
                                                         data-invalid={isInvalid}
                                                     >
                                                         <FieldLabel>
-                                                            Width (cm)
+                                                            {t("width_cm")}
                                                         </FieldLabel>
                                                         <Input
                                                             name={field.name}
@@ -543,7 +543,7 @@ function Trucks() {
                                                         data-invalid={isInvalid}
                                                     >
                                                         <FieldLabel>
-                                                            Height (cm)
+                                                            {t("height_cm")}
                                                         </FieldLabel>
                                                         <Input
                                                             name={field.name}
@@ -599,7 +599,7 @@ function Trucks() {
                                                         data-invalid={isInvalid}
                                                     >
                                                         <FieldLabel>
-                                                            Max Weight (kg)
+                                                            {t("max_weight_kg")}
                                                         </FieldLabel>
                                                         <Input
                                                             name={field.name}
@@ -658,71 +658,72 @@ function Trucks() {
                                         ) : (
                                             <ChevronRight className="size-4" />
                                         )}
-                                        Advanced: loading constraints
+                                        {t("form.advanced.toggle")}
                                     </button>
 
                                     {showAdvanced && (
                                         <div className="grid gap-4 pl-2 border-l-2 border-muted">
                                             <p className="text-xs text-muted-foreground">
-                                                Optional. These fields control
-                                                how the packing algorithm
-                                                enforces LIFO unloading and
-                                                weight balance. Leave as
-                                                defaults if unsure.
+                                                {t("form.advanced.description")}
                                             </p>
 
                                             <createTruckForm.Field
                                                 name="door_side"
-                                                children={(field) => {
-                                                    return (
-                                                        <Field>
-                                                            <FieldLabel>
-                                                                Door Side
-                                                            </FieldLabel>
-                                                            <Select
-                                                                value={
-                                                                    field.state
-                                                                        .value
-                                                                }
-                                                                onValueChange={(
-                                                                    v,
-                                                                ) =>
-                                                                    field.handleChange(
-                                                                        v as
-                                                                            | "rear"
-                                                                            | "left"
-                                                                            | "right",
-                                                                    )
-                                                                }
-                                                            >
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select door side" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    <SelectItem value="rear">
-                                                                        Rear
-                                                                        (most
-                                                                        trucks)
-                                                                    </SelectItem>
-                                                                    <SelectItem value="left">
-                                                                        Left
-                                                                        side
-                                                                    </SelectItem>
-                                                                    <SelectItem value="right">
-                                                                        Right
-                                                                        side
-                                                                    </SelectItem>
-                                                                </SelectContent>
-                                                            </Select>
-                                                            <p className="text-xs text-muted-foreground">
-                                                                Determines which
-                                                                direction items
-                                                                unload for LIFO
-                                                                checking.
-                                                            </p>
-                                                        </Field>
-                                                    );
-                                                }}
+                                                children={(field) => (
+                                                    <Field>
+                                                        <FieldLabel>
+                                                            {t(
+                                                                "form.advanced.doorSide.label",
+                                                            )}
+                                                        </FieldLabel>
+                                                        <Select
+                                                            value={
+                                                                field.state
+                                                                    .value
+                                                            }
+                                                            onValueChange={(
+                                                                v,
+                                                            ) =>
+                                                                field.handleChange(
+                                                                    v as
+                                                                        | "rear"
+                                                                        | "left"
+                                                                        | "right",
+                                                                )
+                                                            }
+                                                        >
+                                                            <SelectTrigger>
+                                                                <SelectValue
+                                                                    placeholder={t(
+                                                                        "form.advanced.doorSide.placeholder",
+                                                                    )}
+                                                                />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="rear">
+                                                                    {t(
+                                                                        "form.advanced.doorSide.options.rear",
+                                                                    )}
+                                                                </SelectItem>
+                                                                <SelectItem value="left">
+                                                                    {t(
+                                                                        "form.advanced.doorSide.options.left",
+                                                                    )}
+                                                                </SelectItem>
+                                                                <SelectItem value="right">
+                                                                    {t(
+                                                                        "form.advanced.doorSide.options.right",
+                                                                    )}
+                                                                </SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {t(
+                                                                "form.advanced.doorSide.helper",
+                                                            )}
+                                                        </p>
+                                                    </Field>
+                                                )}
                                             />
 
                                             <div className="grid grid-cols-2 gap-4">
@@ -741,8 +742,9 @@ function Trucks() {
                                                                 }
                                                             >
                                                                 <FieldLabel>
-                                                                    CoG Min
-                                                                    Ratio
+                                                                    {t(
+                                                                        "form.advanced.cog.minLabel",
+                                                                    )}
                                                                 </FieldLabel>
                                                                 <Input
                                                                     name={
@@ -807,8 +809,9 @@ function Trucks() {
                                                                 }
                                                             >
                                                                 <FieldLabel>
-                                                                    CoG Max
-                                                                    Ratio
+                                                                    {t(
+                                                                        "form.advanced.cog.maxLabel",
+                                                                    )}
                                                                 </FieldLabel>
                                                                 <Input
                                                                     name={
@@ -859,12 +862,7 @@ function Trucks() {
                                                 />
                                             </div>
                                             <p className="text-xs text-muted-foreground">
-                                                Acceptable center-of-gravity
-                                                zone as a fraction of cargo
-                                                length (0 = cab wall, 1 = door).
-                                                Defaults mean the load must
-                                                balance within the middle third
-                                                of the cargo bay.
+                                                {t("form.advanced.cog.helper")}
                                             </p>
                                         </div>
                                     )}

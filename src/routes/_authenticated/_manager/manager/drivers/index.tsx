@@ -120,20 +120,20 @@ function DriversPage() {
                     <DialogTrigger asChild>
                         <Button onClick={async () => await createInviteUrl()}>
                             <Plus />
-                            Add Driver
+                            {t("add_driver")}
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Invite your driver</DialogTitle>
+                            <DialogTitle>{t("invite_your_driver")}</DialogTitle>
                             <DialogDescription>
-                                Invite your driver to get the most out
+                                {t("invite_driver_description")}
                             </DialogDescription>
                         </DialogHeader>
                         <Separator orientation={"horizontal"} />
                         <div className="grid gap-5">
                             <Field>
-                                <FieldLabel>Invite with link</FieldLabel>
+                                <FieldLabel>{t("invite_with_link")}</FieldLabel>
                                 <ButtonGroup>
                                     <Input disabled value={url} />
                                     <Button
@@ -143,12 +143,12 @@ function DriversPage() {
                                         {isCopied ? (
                                             <div className="flex items-center gap-2">
                                                 <Check />
-                                                Copied
+                                                {t("copied")}
                                             </div>
                                         ) : (
                                             <div className="flex items-center gap-2">
                                                 <Copy />
-                                                Copy
+                                                {t("copy")}
                                             </div>
                                         )}
                                     </Button>

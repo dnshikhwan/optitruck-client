@@ -258,5 +258,123 @@
             }
         }
     },
-    "status_in_transit": "In Transit"
+    "status_in_transit": "In Transit",
+    "add_driver": "Add Driver",
+    "invite_your_driver": "Invite your driver",
+    "invite_driver_description": "Invite your driver to get the most out",
+    "invite_with_link": "Invite with link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "my_account": "My Account",
+    "logout": "Log out",
+    "length_cm": "Length (cm)",
+    "width_cm": "Width (cm)",
+    "height_cm": "Height (cm)",
+    "max_weight_kg": "Max Weight (kg)",
+    "form": {
+        "advanced": {
+            "toggle": "Advanced: loading constraints",
+            "description": "Optional. These fields control how the packing algorithm enforces LIFO unloading and weight balance. Leave as defaults if unsure.",
+            "doorSide": {
+                "label": "Door Side",
+                "placeholder": "Select door side",
+                "helper": "Determines which direction items unload for LIFO checking.",
+                "options": {
+                    "rear": "Rear (most trucks)",
+                    "left": "Left side",
+                    "right": "Right side"
+                }
+            },
+            "cog": {
+                "minLabel": "CoG Min Ratio",
+                "maxLabel": "CoG Max Ratio",
+                "helper": "Acceptable center-of-gravity zone as a fraction of cargo length (0 = cab wall, 1 = door). Defaults mean the load must balance within the middle third of the cargo bay."
+            }
+        }
+    },
+    "header": {
+        "title": "Algorithm Report Review",
+        "description": "Click print to export as PDF via your browser",
+        "printButton": "Print / Export PDF"
+    },
+    "report": {
+        "title": "Technical Report",
+        "subtitle": "Load and Route Optimisation for Vehicles",
+        "generatedAt": "Generated:",
+        "meta": {
+            "shipmentId": "Shipment Id ({{count}})",
+            "vehicle": "Vehicle",
+            "dimensions": "Dimensions (L × W × H)",
+            "volume": "Volume",
+            "bestAlgorithm": "Best Algorithm"
+        }
+    },
+    "summary": {
+        "title": "Summary",
+        "bestUtilisation": "Best Utilisation",
+        "itemsPacked": "Items Packed (Best)",
+        "fastestAlgorithm": "Fastest Algorithm",
+        "algorithmsEvaluated": "Algorithms Evaluated",
+        "failed": "({{count}} failed)",
+        "fullyCompliant": "Fully Compliant",
+        "fullyCompliantHelper": "Passed all four constraint checks"
+    },
+    "comparison": {
+        "title": "Algorithm Comparison"
+    },
+    "performance": {
+        "title": "Performance Analysis",
+        "fig1": "Fig 1. — Volume Utilisation (%)",
+        "fig2": "Fig 2. — Execution Time (ms)",
+        "fig3": "Fig 3. — Constraint Violations by Algorithm"
+    },
+    "chart": {
+        "volumeUtilisation": "Volume Utilisation (%)",
+        "executionTime": "Execution Time (ms)",
+        "lifoViolations": "LIFO Violations",
+        "fragilityViolations": "Fragility Violations"
+    },
+    "errors": {
+        "fetchFailed": "Error fetching delivery job"
+    },
+    "columns": {
+        "no": "#",
+        "algorithm": "Algorithm",
+        "volumeUtilization": "Volume Utilization",
+        "weightUtilization": "Weight Utilization",
+        "itemsPacked": "Items Packed",
+        "executionTime": "Execution Time",
+        "lifo": "LIFO",
+        "support": "Support",
+        "fragility": "Fragility",
+        "balance": "Balance",
+        "status": "Status"
+    },
+    "algorithms": {
+        "greedy_search": "Greedy Search",
+        "h1": "H1",
+        "bottom_left_fill": "Bottom Left Fit",
+        "extreme_point": "Extreme Point",
+        "grasp_vnd": "GRASP/VND"
+    },
+    "validation": {
+        "lifoLabel": "LIFO",
+        "lifoExplanation": "Last-In-First-Out compliance. Items for earlier stops must be reachable without moving items for later stops. The number shown is the count of blocking pairs.",
+        "supportLabel": "Support",
+        "supportExplanation": "Every placed item has enough of its base resting on the floor or on other items. Average support is {{ratioPct}} across all placed items.",
+        "fragilityLabel": "Fragility",
+        "fragilityExplanation": "No fragile or non-stackable item has too much weight loaded on top of it. The number shown is the count of crushed items.",
+        "cogLabel": "CoG",
+        "cogExplanation": "Load's center of gravity sits within the acceptable zone along the cargo bay length. Current CoG is at {{ratioPct}} from the cab wall."
+    },
+    "status_algo": {
+        "completed": "Completed",
+        "running": "Running",
+        "failed": "Failed"
+    },
+    "time": {
+        "ms": "{{value}} ms",
+        "s": "{{value}} s",
+        "min": "{{value}} min"
+    }
 }

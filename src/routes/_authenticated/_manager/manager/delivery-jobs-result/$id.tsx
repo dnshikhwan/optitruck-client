@@ -1,4 +1,3 @@
-import { AlgoComparisonColumns } from "@/components/tables/algo_comparison/columns";
 import { AlgoComparisonDataTable } from "@/components/tables/algo_comparison/data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +15,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
 import { Dot, Printer } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useReactToPrint } from "react-to-print";
 import {
     Bar,
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/chart";
 import type { DeliveryJob } from "@/interfaces/deliveryJob";
 import { DashboardLayout } from "../../../../../../layouts";
+import { createAlgoComparisonColumns } from "@/components/tables/algo_comparison/columns";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/delivery-jobs-result/$id",
@@ -40,6 +41,7 @@ export const Route = createFileRoute(
 });
 
 function DeliveryJobResultPage() {
+    const { t } = useTranslation();
     const { id } = Route.useParams();
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({
@@ -60,7 +62,7 @@ function DeliveryJobResultPage() {
         queryKey: [`delivery-job-${id}`],
         queryFn: async () => {
             const res = await apiFetch(`/delivery-jobs/${id}`);
-            if (!res.ok) throw new Error("Error fetching delivery job");
+            if (!res.ok) throw new Error("FETCH_FAILED");
             return res.json();
         },
         select: (response) => response.data,
@@ -100,18 +102,16 @@ function DeliveryJobResultPage() {
         candidatePool[0],
     );
 
-    // Number of algorithms that actually produced results
     const successCount = completedResults.length;
+    const totalCount = deliveryJob.packingJob.algorithmResults.length;
     const failedCount = deliveryJob.packingJob.algorithmResults.filter(
         (r) => r.status === "failed",
     ).length;
 
-    // Chart data: only include completed runs in the perf charts
     const chartData = completedResults.map((result) => ({
         algorithm: result.algorithm.replace(/_/g, " ").toUpperCase(),
         volume_utilization: parseFloat(result.volume_utilization).toFixed(2),
         execution_time_ms: parseFloat(result.execution_time_ms),
-        // For the new compliance chart
         lifo_violations: result.lifo_violations,
         fragility_violations: result.fragility_violations,
         support_failed: result.support_ok ? 0 : 1,
@@ -125,19 +125,19 @@ function DeliveryJobResultPage() {
 
     const chartConfig = {
         volume_utilization: {
-            label: "Volume Utilisation (%)",
+            label: t("chart.volumeUtilisation"),
             color: "var(--chart-1)",
         },
         execution_time_ms: {
-            label: "Execution Time (ms)",
+            label: t("chart.executionTime"),
             color: "var(--chart-2)",
         },
         lifo_violations: {
-            label: "LIFO Violations",
+            label: t("chart.lifoViolations"),
             color: "var(--chart-3)",
         },
         fragility_violations: {
-            label: "Fragility Violations",
+            label: t("chart.fragilityViolations"),
             color: "var(--chart-4)",
         },
     };
@@ -152,14 +152,13 @@ function DeliveryJobResultPage() {
                     <CardHeader className="no-print">
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col">
-                                <CardTitle>Algorithm Report Review</CardTitle>
+                                <CardTitle>{t("header.title")}</CardTitle>
                                 <CardDescription>
-                                    Click print to export as pdf via your
-                                    browser
+                                    {t("header.description")}
                                 </CardDescription>
                             </div>
                             <Button onClick={reactToPrintFn}>
-                                <Printer /> Print / Export PDF
+                                <Printer /> {t("header.printButton")}
                             </Button>
                         </div>
                     </CardHeader>
@@ -167,7 +166,7 @@ function DeliveryJobResultPage() {
                         <Card className="print:border-none print:shadow-none">
                             <CardHeader>
                                 <CardTitle className="flex items-center">
-                                    Technical Report <Dot /> OptiTruck
+                                    {t("report.title")} <Dot /> OptiTruck
                                 </CardTitle>
                                 <div className="flex flex-col items-end">
                                     <CardTitle>
@@ -179,7 +178,7 @@ function DeliveryJobResultPage() {
                                         -{id.slice(0, 5).toUpperCase()}
                                     </CardTitle>
                                     <CardDescription>
-                                        Generated :{" "}
+                                        {t("report.generatedAt")}{" "}
                                         {format(
                                             Date.now(),
                                             "dd MMMM yyyy HH:mm:ss",
@@ -187,18 +186,18 @@ function DeliveryJobResultPage() {
                                     </CardDescription>
                                 </div>
                                 <CardDescription>
-                                    Оптимизация загрузки и маршрутов
-                                    транспортных средств
+                                    {t("report.subtitle")}
                                 </CardDescription>
                                 <div className="grid grid-cols-5 mt-4">
                                     <Card>
                                         <CardHeader>
                                             <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                Shipment Id (
-                                                {deliveryJob.shipments.length})
+                                                {t("report.meta.shipmentId", {
+                                                    count: deliveryJob.shipments
+                                                        .length,
+                                                })}
                                             </CardDescription>
                                             <CardTitle>
-                                                {/* Shipment id */}
                                                 <div className="flex flex-col gap-1">
                                                     {deliveryJob.shipments.map(
                                                         (shipment, index) => (
@@ -227,7 +226,7 @@ function DeliveryJobResultPage() {
                                     <Card>
                                         <CardHeader>
                                             <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                Vehicle
+                                                {t("report.meta.vehicle")}
                                             </CardDescription>
                                             <CardTitle>
                                                 {deliveryJob.truck.model}
@@ -237,13 +236,13 @@ function DeliveryJobResultPage() {
                                     <Card>
                                         <CardHeader>
                                             <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                Dimensions (L x W x H)
+                                                {t("report.meta.dimensions")}
                                             </CardDescription>
                                             <CardTitle>
                                                 {deliveryJob.truck.length_cm +
-                                                    " x " +
+                                                    " × " +
                                                     deliveryJob.truck.width_cm +
-                                                    " x " +
+                                                    " × " +
                                                     deliveryJob.truck
                                                         .height_cm}{" "}
                                                 cm
@@ -253,19 +252,18 @@ function DeliveryJobResultPage() {
                                     <Card>
                                         <CardHeader>
                                             <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                Volume
+                                                {t("report.meta.volume")}
                                             </CardDescription>
                                             <CardTitle>
-                                                {deliveryJob &&
-                                                    (
-                                                        (deliveryJob.truck
-                                                            .length_cm *
-                                                            deliveryJob.truck
-                                                                .width_cm *
-                                                            deliveryJob.truck
-                                                                .height_cm) /
-                                                        1000000
-                                                    ).toFixed(2)}{" "}
+                                                {(
+                                                    (deliveryJob.truck
+                                                        .length_cm *
+                                                        deliveryJob.truck
+                                                            .width_cm *
+                                                        deliveryJob.truck
+                                                            .height_cm) /
+                                                    1000000
+                                                ).toFixed(2)}{" "}
                                                 m³
                                             </CardTitle>
                                         </CardHeader>
@@ -273,7 +271,7 @@ function DeliveryJobResultPage() {
                                     <Card>
                                         <CardHeader>
                                             <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                Best Algorithm
+                                                {t("report.meta.bestAlgorithm")}
                                             </CardDescription>
                                             <CardTitle className="uppercase">
                                                 {bestResult?.algorithm.replace(
@@ -288,15 +286,17 @@ function DeliveryJobResultPage() {
                             <CardContent>
                                 <Card className="border-none shadow-none">
                                     <CardHeader>
-                                        <CardTitle className="flex items-center">
-                                            Summary{" "}
+                                        <CardTitle>
+                                            {t("summary.title")}
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="grid grid-cols-5 print:grid-cols-3 gap-3">
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                    Best Utilisation
+                                                    {t(
+                                                        "summary.bestUtilisation",
+                                                    )}
                                                 </CardDescription>
                                                 <CardTitle>
                                                     {Number(
@@ -309,7 +309,7 @@ function DeliveryJobResultPage() {
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                    Items Packed (Best)
+                                                    {t("summary.itemsPacked")}
                                                 </CardDescription>
                                                 <CardTitle>
                                                     {bestResult?.items_packed} /{" "}
@@ -320,7 +320,9 @@ function DeliveryJobResultPage() {
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                    Fastest Algorithm
+                                                    {t(
+                                                        "summary.fastestAlgorithm",
+                                                    )}
                                                 </CardDescription>
                                                 <CardTitle className="uppercase">
                                                     {fastestResult?.algorithm.replace(
@@ -333,14 +335,20 @@ function DeliveryJobResultPage() {
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                    Algorithms Evaluated
+                                                    {t(
+                                                        "summary.algorithmsEvaluated",
+                                                    )}
                                                 </CardDescription>
                                                 <CardTitle>
-                                                    {successCount}/5
+                                                    {successCount}/{totalCount}
                                                     {failedCount > 0 && (
                                                         <span className="text-destructive text-sm font-normal ml-2">
-                                                            ({failedCount}{" "}
-                                                            failed)
+                                                            {t(
+                                                                "summary.failed",
+                                                                {
+                                                                    count: failedCount,
+                                                                },
+                                                            )}
                                                         </span>
                                                     )}
                                                 </CardTitle>
@@ -349,7 +357,9 @@ function DeliveryJobResultPage() {
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="font-heading uppercase tracking-widest text-xs">
-                                                    Fully Compliant
+                                                    {t(
+                                                        "summary.fullyCompliant",
+                                                    )}
                                                 </CardDescription>
                                                 <CardTitle>
                                                     {
@@ -358,8 +368,9 @@ function DeliveryJobResultPage() {
                                                     /{successCount}
                                                 </CardTitle>
                                                 <CardDescription className="text-xs mt-1">
-                                                    Passed all four constraint
-                                                    checks
+                                                    {t(
+                                                        "summary.fullyCompliantHelper",
+                                                    )}
                                                 </CardDescription>
                                             </CardHeader>
                                         </Card>
@@ -369,12 +380,14 @@ function DeliveryJobResultPage() {
                                 <Card className="border-none shadow-none">
                                     <CardHeader>
                                         <CardTitle>
-                                            Algorithm Comparison
+                                            {t("comparison.title")}
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <AlgoComparisonDataTable
-                                            columns={AlgoComparisonColumns}
+                                            columns={createAlgoComparisonColumns(
+                                                t,
+                                            )}
                                             data={deliveryJob.packingJob.algorithmResults.map(
                                                 (r) => ({
                                                     ...r,
@@ -414,21 +427,20 @@ function DeliveryJobResultPage() {
                                 <Card className="border-none shadow-none break-before-page print:mt-5">
                                     <CardHeader>
                                         <CardTitle>
-                                            Performance Analysis
+                                            {t("performance.title")}
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="grid print:grid-cols-1 grid-cols-3 gap-3">
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="uppercase tracking-widest text-xs">
-                                                    Fig 1. — Volume Utilisation
-                                                    (%)
+                                                    {t("performance.fig1")}
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent>
                                                 <ChartContainer
                                                     config={chartConfig}
-                                                    className=" w-full"
+                                                    className="w-full"
                                                 >
                                                     <BarChart data={chartData}>
                                                         <CartesianGrid
@@ -477,13 +489,13 @@ function DeliveryJobResultPage() {
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="uppercase tracking-widest text-xs">
-                                                    Fig 2. — Execution Time (ms)
+                                                    {t("performance.fig2")}
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent>
                                                 <ChartContainer
                                                     config={chartConfig}
-                                                    className=" w-full"
+                                                    className="w-full"
                                                 >
                                                     <BarChart data={chartData}>
                                                         <CartesianGrid
@@ -533,8 +545,7 @@ function DeliveryJobResultPage() {
                                         <Card className="break-before-page print:mt-5">
                                             <CardHeader>
                                                 <CardDescription className="uppercase tracking-widest text-xs">
-                                                    Fig 3. — Constraint
-                                                    Violations by Algorithm
+                                                    {t("performance.fig3")}
                                                 </CardDescription>
                                             </CardHeader>
                                             <CardContent>

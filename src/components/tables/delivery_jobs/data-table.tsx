@@ -58,7 +58,7 @@ export const createDeliveryJobColumns = (
     },
     {
         accessorKey: "id",
-        header: t("job_id"),
+        header: t("id"),
         cell: ({ row }) => {
             const navigate = useNavigate();
             const id = row.original.id;

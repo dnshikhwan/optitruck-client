@@ -338,7 +338,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>
-                                    My Account
+                                    {t("my_account")}
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
@@ -352,7 +352,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                         });
                                     }}
                                 >
-                                    Log out
+                                    {t("logout")}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -412,7 +412,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                     className="w-56"
                                 >
                                     <DropdownMenuLabel>
-                                        My Account
+                                        {t("my_account")}
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
@@ -426,7 +426,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                             });
                                         }}
                                     >
-                                        Log out
+                                        {t("logout")}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

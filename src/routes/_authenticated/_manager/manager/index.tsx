@@ -142,7 +142,7 @@ function IndexDashboard() {
                 ))}
             </div>
             <div className="flex items-stretch gap-4">
-                <Card className="flex-1 h-full">
+                <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>{t("latest_shipment")}</CardTitle>
                         <CardDescription>{t("showing_last_5")}</CardDescription>
