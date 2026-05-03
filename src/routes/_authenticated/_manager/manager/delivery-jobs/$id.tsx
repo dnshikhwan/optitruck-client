@@ -592,7 +592,11 @@ function DeliveryJobsDetailPage() {
                                 </CardDescription>
                             )}
                             {routingJob?.status === "completed" &&
-                                routingJob?.routingResult && (
+                                routingJob?.routingResult &&
+                                company?.warehouseLat &&
+                                company?.warehouseLng &&
+                                !isNaN(Number(company.warehouseLat)) &&
+                                !isNaN(Number(company.warehouseLng)) && (
                                     <div className="flex flex-col gap-4">
                                         <RouteMap
                                             stops={
@@ -600,10 +604,10 @@ function DeliveryJobsDetailPage() {
                                                     .stopSequence
                                             }
                                             warehouseLat={Number(
-                                                company?.warehouseLat,
+                                                company.warehouseLat,
                                             )}
                                             warehouseLng={Number(
-                                                company?.warehouseLng,
+                                                company.warehouseLng,
                                             )}
                                         />
                                     </div>
