@@ -8,7 +8,6 @@ import {
 } from "@/interfaces/driverAssignment";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import apiFetch from "@/utils/apiFetch";
-import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

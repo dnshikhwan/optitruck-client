@@ -28,7 +28,7 @@ import apiFetch from "@/utils/apiFetch";
 import type { Shipment } from "@/interfaces/shipments";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
+
 import type { Truck } from "@/interfaces/trucks";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";

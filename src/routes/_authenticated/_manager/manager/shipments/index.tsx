@@ -5,7 +5,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiFetch from "@/utils/apiFetch";
 import { ShipmentDataTable } from "@/components/tables/shipments/data-table";
 import { createShipmentColumns } from "@/components/tables/shipments/columns";
-import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { exportToExcel } from "@/utils/excel";

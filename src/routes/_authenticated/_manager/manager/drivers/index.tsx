@@ -25,7 +25,6 @@ import { DataTable } from "@/components/tables/drivers/data-table";
 import { useQuery } from "@tanstack/react-query";
 import { getAccessToken } from "@/utils/tokenStore";
 import apiFetch from "@/utils/apiFetch";
-import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent } from "@/components/ui/card";
 import { CustomSpinner } from "@/components/custom-spinner";
 

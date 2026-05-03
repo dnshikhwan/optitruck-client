@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { registerLogoutCallback, setAccessToken } from "./utils/tokenStore";
-import { Spinner } from "./components/ui/spinner";
 import { useQueryClient } from "@tanstack/react-query";
 import { CustomSpinner } from "./components/custom-spinner";
 
