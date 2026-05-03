@@ -33,6 +33,7 @@ import {
 import type { DeliveryJob } from "@/interfaces/deliveryJob";
 import { DashboardLayout } from "../../../../../../layouts";
 import { createAlgoComparisonColumns } from "@/components/tables/algo_comparison/columns";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/delivery-jobs-result/$id",
@@ -68,7 +69,12 @@ function DeliveryJobResultPage() {
         select: (response) => response.data,
     });
 
-    if (isLoading || !deliveryJob) return <Spinner />;
+    if (isLoading || !deliveryJob)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     const completedResults = deliveryJob.packingJob.algorithmResults.filter(
         (r) => r.status === "completed",

@@ -11,6 +11,7 @@ import apiFetch from "@/utils/apiFetch";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useMemo } from "react";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/delivery-jobs/",
@@ -57,7 +58,12 @@ function DeliveryJobs() {
         },
     });
 
-    if (isLoading) return <Spinner />;
+    if (isLoading)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     return (
         <DashboardLayout>

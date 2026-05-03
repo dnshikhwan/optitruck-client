@@ -40,6 +40,7 @@ import type { RoutingJob } from "@/interfaces/routingJob";
 import { RouteMap } from "@/components/RouteMap";
 import { AlgorithmResultsDataTable } from "@/components/tables/algorithm_results/data-table";
 import { algorithmResultsColumns } from "@/components/tables/algorithm_results/columns";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/delivery-jobs/$id",
@@ -312,7 +313,12 @@ function DeliveryJobsDetailPage() {
         [deliveryJob, selectAlgorithm],
     );
 
-    if (isLoading) return <Spinner />;
+    if (isLoading)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     if (!deliveryJob) return null;
 

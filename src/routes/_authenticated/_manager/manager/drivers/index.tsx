@@ -27,6 +27,7 @@ import { getAccessToken } from "@/utils/tokenStore";
 import apiFetch from "@/utils/apiFetch";
 import { Spinner } from "@/components/ui/spinner";
 import { Card, CardContent } from "@/components/ui/card";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/drivers/",
@@ -58,7 +59,12 @@ function DriversPage() {
         select: (response) => response.data,
     });
 
-    if (isLoading) return <Spinner />;
+    if (isLoading)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     const createInviteUrl = async () => {
         const response = await apiFetch(`/auth/invite`, {
