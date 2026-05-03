@@ -8,7 +8,6 @@ import { DeliveryJobsDataTable } from "@/components/tables/delivery_jobs/columns
 import { createDeliveryJobColumns } from "@/components/tables/delivery_jobs/data-table";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiFetch from "@/utils/apiFetch";
-import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { useMemo } from "react";
 import { CustomSpinner } from "@/components/custom-spinner";

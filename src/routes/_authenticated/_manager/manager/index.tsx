@@ -5,7 +5,6 @@ import { ChartPieLabelList } from "@/components/charts/chart-pie-label-list";
 import { DashboardLayout } from "../../../../../layouts";
 import { useQuery } from "@tanstack/react-query";
 import apiFetch from "@/utils/apiFetch";
-import { Spinner } from "@/components/ui/spinner";
 import { ShipmentDataTable } from "@/components/tables/shipments/data-table";
 import {
     Card,
