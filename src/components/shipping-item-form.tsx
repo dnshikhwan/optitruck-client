@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronRight, Dot, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import {
@@ -33,9 +34,7 @@ export const ShippingItemForm = ({
     onRemove,
     onUpdate,
 }: ShippingItemFormProps) => {
-    // Track which items have their advanced section expanded.
-    // Use a Set of item IDs so toggling is O(1) and collapsing one item
-    // doesn't affect others.
+    const { t } = useTranslation();
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
     const toggleExpanded = (id: string) => {
@@ -57,12 +56,12 @@ export const ShippingItemForm = ({
                 return (
                     <Card key={item.id}>
                         <CardHeader>
-                            <div className="flex w-full items-center justify-between rounded-md">
-                                <div className="flex items-center gap-1">
-                                    <Dot />
+                            <div className="flex w-full items-center justify-between">
+                                <div className="flex items-center gap-1 min-w-0">
+                                    <Dot className="shrink-0" />
                                     <Input
-                                        className="max-w-2xs bg-transparent! border-0 focus-visible:ring-0"
-                                        placeholder="Item name..."
+                                        className="bg-transparent! border-0 focus-visible:ring-0 min-w-0"
+                                        placeholder={t("item_name_placeholder")}
                                         value={item.name}
                                         onChange={(e) =>
                                             onUpdate(
@@ -74,8 +73,8 @@ export const ShippingItemForm = ({
                                     />
                                 </div>
                                 <Button
-                                    variant={"ghost"}
-                                    size={"icon-sm"}
+                                    variant="ghost"
+                                    size="icon-sm"
                                     type="button"
                                     onClick={() => onRemove(item.id)}
                                 >
@@ -83,14 +82,15 @@ export const ShippingItemForm = ({
                                 </Button>
                             </div>
                         </CardHeader>
+
                         <CardContent className="flex flex-col gap-3">
-                            {/* Existing dimension + weight + qty + color row */}
-                            <div className="flex items-center gap-4">
+                            {/* Main fields — 2 cols on mobile, 3 on sm, 6 on lg */}
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                                 <Field>
-                                    <FieldLabel>Length (cm)</FieldLabel>
+                                    <FieldLabel>{t("length_cm")}</FieldLabel>
                                     <Input
                                         type="number"
-                                        step={"0.01"}
+                                        step="0.01"
                                         inputMode="decimal"
                                         placeholder="0.00"
                                         value={
@@ -108,10 +108,10 @@ export const ShippingItemForm = ({
                                     />
                                 </Field>
                                 <Field>
-                                    <FieldLabel>Width (cm)</FieldLabel>
+                                    <FieldLabel>{t("width_cm")}</FieldLabel>
                                     <Input
                                         type="number"
-                                        step={"0.01"}
+                                        step="0.01"
                                         inputMode="decimal"
                                         placeholder="0.00"
                                         value={
@@ -129,10 +129,10 @@ export const ShippingItemForm = ({
                                     />
                                 </Field>
                                 <Field>
-                                    <FieldLabel>Height (cm)</FieldLabel>
+                                    <FieldLabel>{t("height_cm")}</FieldLabel>
                                     <Input
                                         type="number"
-                                        step={"0.01"}
+                                        step="0.01"
                                         inputMode="decimal"
                                         placeholder="0.00"
                                         value={
@@ -150,10 +150,10 @@ export const ShippingItemForm = ({
                                     />
                                 </Field>
                                 <Field>
-                                    <FieldLabel>Weight (kg)</FieldLabel>
+                                    <FieldLabel>{t("weight_kg")}</FieldLabel>
                                     <Input
                                         type="number"
-                                        step={"0.01"}
+                                        step="0.01"
                                         inputMode="decimal"
                                         placeholder="0.00"
                                         value={
@@ -171,7 +171,7 @@ export const ShippingItemForm = ({
                                     />
                                 </Field>
                                 <Field>
-                                    <FieldLabel>Quantity</FieldLabel>
+                                    <FieldLabel>{t("quantity")}</FieldLabel>
                                     <Input
                                         type="number"
                                         defaultValue={1}
@@ -190,7 +190,7 @@ export const ShippingItemForm = ({
                                     />
                                 </Field>
                                 <Field>
-                                    <FieldLabel>Color</FieldLabel>
+                                    <FieldLabel>{t("color")}</FieldLabel>
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="color"
@@ -202,7 +202,7 @@ export const ShippingItemForm = ({
                                                     e.target.value,
                                                 )
                                             }
-                                            className="h-9 w-10 cursor-pointer rounded border border-input bg-transparent p-1"
+                                            className="h-9 w-10 cursor-pointer rounded border border-input bg-transparent p-1 shrink-0"
                                         />
                                         <Input
                                             type="text"
@@ -220,7 +220,7 @@ export const ShippingItemForm = ({
                                 </Field>
                             </div>
 
-                            {/* Advanced section toggle */}
+                            {/* Advanced toggle */}
                             <button
                                 type="button"
                                 onClick={() => toggleExpanded(item.id)}
@@ -231,22 +231,18 @@ export const ShippingItemForm = ({
                                 ) : (
                                     <ChevronRight className="size-4" />
                                 )}
-                                Advanced: handling & constraints
+                                {t("advanced_handling")}
                             </button>
 
-                            {/* Advanced section content */}
                             {isExpanded && (
                                 <div className="flex flex-col gap-4 pl-2 border-l-2 border-muted">
                                     <p className="text-xs text-muted-foreground">
-                                        Optional. These fields control how the
-                                        packing algorithm treats this item —
-                                        orientation, stackability, fragility,
-                                        and loading priority.
+                                        {t("advanced_handling_desc")}
                                     </p>
 
-                                    {/* Orientation switches */}
+                                    {/* Switches */}
                                     <div className="flex flex-col gap-3">
-                                        <Field orientation={"horizontal"}>
+                                        <Field orientation="horizontal">
                                             <Switch
                                                 checked={item.this_side_up}
                                                 onCheckedChange={(e) =>
@@ -262,15 +258,14 @@ export const ShippingItemForm = ({
                                             <FieldLabel
                                                 htmlFor={`this-side-up-${item.id}`}
                                             >
-                                                This side up
+                                                {t("this_side_up")}
                                             </FieldLabel>
                                             <span className="text-xs text-muted-foreground ml-2">
-                                                Prevents the item from being
-                                                tipped onto its side
+                                                {t("this_side_up_desc")}
                                             </span>
                                         </Field>
 
-                                        <Field orientation={"horizontal"}>
+                                        <Field orientation="horizontal">
                                             <Switch
                                                 checked={
                                                     item.allow_horizontal_rotation
@@ -288,16 +283,14 @@ export const ShippingItemForm = ({
                                             <FieldLabel
                                                 htmlFor={`horiz-rot-${item.id}`}
                                             >
-                                                Allow rotation
+                                                {t("allow_rotation")}
                                             </FieldLabel>
                                             <span className="text-xs text-muted-foreground ml-2">
-                                                Item can spin around its
-                                                vertical axis (swap length and
-                                                width)
+                                                {t("allow_rotation_desc")}
                                             </span>
                                         </Field>
 
-                                        <Field orientation={"horizontal"}>
+                                        <Field orientation="horizontal">
                                             <Switch
                                                 checked={item.is_stackable}
                                                 onCheckedChange={(e) =>
@@ -313,19 +306,20 @@ export const ShippingItemForm = ({
                                             <FieldLabel
                                                 htmlFor={`stackable-${item.id}`}
                                             >
-                                                Stackable
+                                                {t("stackable")}
                                             </FieldLabel>
                                             <span className="text-xs text-muted-foreground ml-2">
-                                                Allow other items to be placed
-                                                on top
+                                                {t("stackable_desc")}
                                             </span>
                                         </Field>
                                     </div>
 
-                                    {/* Fragility + handling category + priority + max stack weight */}
-                                    <div className="grid grid-cols-2 gap-4">
+                                    {/* Advanced fields — 1 col mobile, 2 col sm+ */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <Field>
-                                            <FieldLabel>Fragility</FieldLabel>
+                                            <FieldLabel>
+                                                {t("fragility")}
+                                            </FieldLabel>
                                             <Select
                                                 value={String(item.fragility)}
                                                 onValueChange={(v) =>
@@ -345,28 +339,28 @@ export const ShippingItemForm = ({
                                                             FragilityLevel.NONE,
                                                         )}
                                                     >
-                                                        None — rugged
+                                                        {t("fragility_none")}
                                                     </SelectItem>
                                                     <SelectItem
                                                         value={String(
                                                             FragilityLevel.LOW,
                                                         )}
                                                     >
-                                                        Low — standard care
+                                                        {t("fragility_low")}
                                                     </SelectItem>
                                                     <SelectItem
                                                         value={String(
                                                             FragilityLevel.MEDIUM,
                                                         )}
                                                     >
-                                                        Medium — limit stacking
+                                                        {t("fragility_medium")}
                                                     </SelectItem>
                                                     <SelectItem
                                                         value={String(
                                                             FragilityLevel.HIGH,
                                                         )}
                                                     >
-                                                        High — do not stack
+                                                        {t("fragility_high")}
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -374,7 +368,7 @@ export const ShippingItemForm = ({
 
                                         <Field>
                                             <FieldLabel>
-                                                Handling category
+                                                {t("handling_category")}
                                             </FieldLabel>
                                             <Select
                                                 value={item.handling_category}
@@ -395,28 +389,32 @@ export const ShippingItemForm = ({
                                                             HandlingCategory.STANDARD
                                                         }
                                                     >
-                                                        Standard
+                                                        {t("handling_standard")}
                                                     </SelectItem>
                                                     <SelectItem
                                                         value={
                                                             HandlingCategory.FRAGILE
                                                         }
                                                     >
-                                                        Fragile
+                                                        {t("handling_fragile")}
                                                     </SelectItem>
                                                     <SelectItem
                                                         value={
                                                             HandlingCategory.HAZARDOUS
                                                         }
                                                     >
-                                                        Hazardous
+                                                        {t(
+                                                            "handling_hazardous",
+                                                        )}
                                                     </SelectItem>
                                                     <SelectItem
                                                         value={
                                                             HandlingCategory.PERISHABLE
                                                         }
                                                     >
-                                                        Perishable
+                                                        {t(
+                                                            "handling_perishable",
+                                                        )}
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -424,13 +422,15 @@ export const ShippingItemForm = ({
 
                                         <Field>
                                             <FieldLabel>
-                                                Max stacking weight (kg)
+                                                {t("max_stack_weight_kg")}
                                             </FieldLabel>
                                             <Input
                                                 type="number"
                                                 step="0.01"
                                                 inputMode="decimal"
-                                                placeholder="Leave empty for default"
+                                                placeholder={t(
+                                                    "max_stack_weight_placeholder",
+                                                )}
                                                 value={
                                                     item.max_stack_weight_kg ??
                                                     ""
@@ -447,13 +447,14 @@ export const ShippingItemForm = ({
                                                 }}
                                             />
                                             <span className="text-xs text-muted-foreground">
-                                                If blank, uses 2× item's own
-                                                weight
+                                                {t("max_stack_weight_hint")}
                                             </span>
                                         </Field>
 
                                         <Field>
-                                            <FieldLabel>Priority</FieldLabel>
+                                            <FieldLabel>
+                                                {t("priority")}
+                                            </FieldLabel>
                                             <Input
                                                 type="number"
                                                 min="0"
@@ -472,8 +473,7 @@ export const ShippingItemForm = ({
                                                 }
                                             />
                                             <span className="text-xs text-muted-foreground">
-                                                Higher values load first when
-                                                capacity is tight
+                                                {t("priority_hint")}
                                             </span>
                                         </Field>
                                     </div>

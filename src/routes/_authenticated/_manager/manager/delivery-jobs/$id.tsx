@@ -318,55 +318,52 @@ function DeliveryJobsDetailPage() {
 
     return (
         <DashboardLayout>
-            <div className="flex items-center justify-between">
+            {/* Header */}
+            <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                    <div className="flex items-center">
+                    <div className="flex flex-wrap items-center gap-1">
                         <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
-                            Delivery Job
-                        </h1>
-                        <Dot />
-                        <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
-                            DJ-
+                            Delivery Job · DJ-
                             {deliveryJob &&
                                 format(deliveryJob.createdAt, "yyyy")}
                             -{id.substring(0, 6).toUpperCase()}
                         </h1>
-                        <Dot />
                         <DeliveryJobStatusBadge status={deliveryJob.status} />
                     </div>
-                    <CardDescription className="flex items-center">
-                        Created {format(deliveryJob.createdAt, "dd MMMM yyyy")}
-                        <Dot />
-                        <div className="flex items-center gap-2">
-                            <Truck fill="white" />
+                    <CardDescription className="flex flex-wrap items-center gap-x-1 gap-y-1 mt-1">
+                        <span>
+                            Created{" "}
+                            {format(deliveryJob.createdAt, "dd MMMM yyyy")}
+                        </span>
+                        <Dot className="shrink-0" />
+                        <span className="flex items-center gap-1">
+                            <Truck fill="white" className="shrink-0" />
                             {deliveryJob.truck.model} (
                             {deliveryJob.truck.license_plate})
-                        </div>
-                        <Dot />
-                        {deliveryJob.shipments.length} Shipment
+                        </span>
+                        <Dot className="shrink-0" />
+                        <span>{deliveryJob.shipments.length} Shipment</span>
                     </CardDescription>
                 </div>
-
                 <Button
                     onClick={() =>
                         navigate({
                             to: "/manager/delivery-jobs-result/$id",
-                            params: {
-                                id: deliveryJob.id,
-                            },
+                            params: { id: deliveryJob.id },
                         })
                     }
-                    variant={"outline"}
+                    variant="outline"
                 >
-                    <Download />
-                    Export Report
+                    <Download /> Export Report
                 </Button>
             </div>
-            <div className="grid grid-cols-5 gap-4">
+
+            {/* Stats — 2 cols mobile, 3 sm, 5 xl */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
                 <Stat>
                     <StatLabel>Total Items</StatLabel>
                     <StatValue>{totalShipmentItems}</StatValue>
-                    <StatIndicator></StatIndicator>
+                    <StatIndicator />
                     <StatDescription>
                         across {deliveryJob.shipments.length} shipment
                     </StatDescription>
@@ -374,7 +371,7 @@ function DeliveryJobsDetailPage() {
                 <Stat>
                     <StatLabel>Total Item Weight</StatLabel>
                     <StatValue>{totalShipmentWeight.toFixed(2)} kg</StatValue>
-                    <StatIndicator></StatIndicator>
+                    <StatIndicator />
                     <StatDescription>
                         max {deliveryJob.truck.max_weight_kg} kg
                     </StatDescription>
@@ -384,12 +381,12 @@ function DeliveryJobsDetailPage() {
                     <StatValue>
                         {totalShipmentVolume.toFixed(2)} m<sup>3</sup>
                     </StatValue>
-                    <StatIndicator></StatIndicator>
+                    <StatIndicator />
                     <StatDescription>{deliveryJob.truck.model}</StatDescription>
                 </Stat>
                 <Stat>
                     <StatLabel>Total Execution Time</StatLabel>
-                    <StatIndicator></StatIndicator>
+                    <StatIndicator />
                     <StatValue>
                         {optimizationTimeTaken && optimizationTimeTaken >= 1000
                             ? (optimizationTimeTaken / 1000).toFixed(2) + " s"
@@ -401,7 +398,7 @@ function DeliveryJobsDetailPage() {
                 </Stat>
                 <Stat>
                     <StatLabel>Selected Packing Algorithm</StatLabel>
-                    <StatIndicator></StatIndicator>
+                    <StatIndicator />
                     <StatValue>
                         {deliveryJob.selectedResult
                             ? ALGO_LABELS[
@@ -417,8 +414,12 @@ function DeliveryJobsDetailPage() {
                     </StatDescription>
                 </Stat>
             </div>
-            <div className="flex items-start gap-8">
-                <Card className="w-1/2 bg-transparent border-none shadow-none">
+
+            {/* Main two-column layout */}
+            <div className="flex flex-col lg:flex-row items-start gap-8">
+                {/* Left column */}
+                <div className="w-full lg:w-1/2 flex flex-col gap-4">
+                    {/* Shipments */}
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
@@ -428,24 +429,25 @@ function DeliveryJobsDetailPage() {
                         <CardContent className="flex flex-col gap-3">
                             {deliveryJob.shipments.map((shipment, index) => (
                                 <Card key={index}>
-                                    <CardContent className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Badge className="px-3.5 py-2">
+                                    <CardContent className="flex flex-wrap items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <Badge className="px-3.5 py-2 shrink-0">
                                                 {index + 1}
                                             </Badge>
-                                            <div className="flex flex-col gap-2">
-                                                <CardTitle>
+                                            <div className="flex flex-col gap-1 min-w-0">
+                                                <CardTitle className="truncate">
                                                     {shipment.name}
                                                 </CardTitle>
-                                                <div className="flex items-center gap-1">
+                                                <div className="flex flex-wrap items-center gap-1">
                                                     <Pin
                                                         size={16}
                                                         fill="white"
+                                                        className="shrink-0"
                                                     />
-                                                    <CardDescription>
+                                                    <CardDescription className="truncate">
                                                         {shipment.drop_point}
                                                     </CardDescription>
-                                                    <Dot />
+                                                    <Dot className="shrink-0" />
                                                     <CardDescription>
                                                         {format(
                                                             shipment.scheduled_at,
@@ -455,27 +457,21 @@ function DeliveryJobsDetailPage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex flex-col gap-2">
+                                        <div className="flex flex-col gap-1 shrink-0">
                                             <CardDescription>
                                                 {shipment.shipment_items.reduce(
-                                                    (sum, item) => {
-                                                        return (
-                                                            sum + item.quantity
-                                                        );
-                                                    },
+                                                    (sum, item) =>
+                                                        sum + item.quantity,
                                                     0,
                                                 )}{" "}
                                                 items
                                             </CardDescription>
                                             <CardDescription>
                                                 {shipment.shipment_items.reduce(
-                                                    (sum, item) => {
-                                                        return (
-                                                            sum +
-                                                            item.weight_kg *
-                                                                item.quantity
-                                                        );
-                                                    },
+                                                    (sum, item) =>
+                                                        sum +
+                                                        item.weight_kg *
+                                                            item.quantity,
                                                     0,
                                                 )}{" "}
                                                 kg
@@ -487,13 +483,14 @@ function DeliveryJobsDetailPage() {
                         </CardContent>
                     </Card>
 
+                    {/* 3D Packing View */}
                     <Card className="bg-transparent">
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
                                 <CardDescription className="text-xs uppercase tracking-widest">
                                     3D Packing View
                                 </CardDescription>
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
                                     <CardDescription>
                                         Showing:{" "}
                                         {ALGO_LABELS[
@@ -518,7 +515,7 @@ function DeliveryJobsDetailPage() {
                                                         );
                                                 }}
                                                 disabled={isSelecting}
-                                                size={"sm"}
+                                                size="sm"
                                             >
                                                 {isSelecting
                                                     ? "Saving..."
@@ -528,7 +525,7 @@ function DeliveryJobsDetailPage() {
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardContent className=" h-[500px]">
+                        <CardContent className="h-[500px]">
                             {packingResult ? (
                                 <PackingViewer
                                     truck={deliveryJob.truck}
@@ -549,9 +546,11 @@ function DeliveryJobsDetailPage() {
                             )}
                         </CardContent>
                     </Card>
+
+                    {/* Routing */}
                     <Card className="bg-transparent">
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
                                 <CardDescription className="text-xs uppercase tracking-widest">
                                     Routing Optimization
                                 </CardDescription>
@@ -611,56 +610,53 @@ function DeliveryJobsDetailPage() {
                                 )}
                         </CardContent>
                     </Card>
-                </Card>
+                </div>
 
-                <Card className="w-1/2 sticky top-10 bg-transparent border-none shadow-none">
+                {/* Right column */}
+                <div className="w-full lg:w-1/2 lg:sticky lg:top-10 flex flex-col gap-4">
+                    {/* Driver Assignment */}
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
                                 Driver Assignment
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="flex items-center gap-3">
+                        <CardContent className="flex flex-col gap-3">
                             {deliveryJob.driverAssignments.length > 0 ? (
-                                <div className="w-full">
-                                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                                            <User
-                                                size={16}
-                                                className="text-primary"
-                                            />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-semibold">
-                                                {
-                                                    deliveryJob
-                                                        .driverAssignments[0]
-                                                        .driver.first_name
-                                                }{" "}
-                                                {
-                                                    deliveryJob
-                                                        .driverAssignments[0]
-                                                        .driver.last_name
-                                                }
-                                            </p>
-                                            <CardDescription className="text-xs">
-                                                {
-                                                    deliveryJob
-                                                        .driverAssignments[0]
-                                                        .status
-                                                }
-                                            </CardDescription>
-                                        </div>
+                                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                                        <User
+                                            size={16}
+                                            className="text-primary"
+                                        />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold">
+                                            {
+                                                deliveryJob.driverAssignments[0]
+                                                    .driver.first_name
+                                            }{" "}
+                                            {
+                                                deliveryJob.driverAssignments[0]
+                                                    .driver.last_name
+                                            }
+                                        </p>
+                                        <CardDescription className="text-xs">
+                                            {
+                                                deliveryJob.driverAssignments[0]
+                                                    .status
+                                            }
+                                        </CardDescription>
                                     </div>
                                 </div>
                             ) : (
                                 <>
-                                    <div className="flex items-center gap-3 w-full">
+                                    <div className="flex flex-wrap items-center gap-3">
                                         <Select
                                             onValueChange={setSelectedDriverId}
                                             value={selectedDriverId}
                                         >
-                                            <SelectTrigger className="flex-1">
+                                            <SelectTrigger className="flex-1 min-w-40">
                                                 <SelectValue placeholder="Select a driver" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -692,7 +688,7 @@ function DeliveryJobsDetailPage() {
                                         </Button>
                                     </div>
                                     {!selectedAlgo && (
-                                        <p className="text-xs text-yellow-500 mt-1">
+                                        <p className="text-xs text-yellow-500">
                                             ⚠ Select an algorithm result before
                                             assigning a driver
                                         </p>
@@ -701,6 +697,8 @@ function DeliveryJobsDetailPage() {
                             )}
                         </CardContent>
                     </Card>
+
+                    {/* Truck Info */}
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
@@ -709,11 +707,11 @@ function DeliveryJobsDetailPage() {
                         </CardHeader>
                         <CardContent className="flex flex-col gap-3">
                             <div className="flex items-center gap-2">
-                                <Truck fill="white" />
+                                <Truck fill="white" className="shrink-0" />
                                 <div>
-                                    <CardTitle className="flex items-center gap-2">
+                                    <CardTitle>
                                         {deliveryJob.truck.model}
-                                    </CardTitle>{" "}
+                                    </CardTitle>
                                     <CardDescription>
                                         {deliveryJob.truck.license_plate}
                                     </CardDescription>
@@ -754,9 +752,10 @@ function DeliveryJobsDetailPage() {
                         </CardContent>
                     </Card>
 
+                    {/* Algorithm Results */}
                     <Card className="bg-transparent">
                         <CardHeader>
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
                                 <CardDescription className="text-xs uppercase tracking-widest">
                                     Algorithm Results
                                 </CardDescription>
@@ -785,6 +784,7 @@ function DeliveryJobsDetailPage() {
                         </CardContent>
                     </Card>
 
+                    {/* Stop order */}
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
@@ -795,12 +795,10 @@ function DeliveryJobsDetailPage() {
                             {routingJob?.routingResult &&
                                 routingJob.routingResult.stopSequence.map(
                                     (stop, index) => {
-                                        // Find the shipment that matches this stop
                                         const shipment =
                                             deliveryJob.shipments.find(
                                                 (s) => s.id === stop.shipmentId,
                                             );
-
                                         return (
                                             <div
                                                 key={stop.shipmentId}
@@ -817,14 +815,14 @@ function DeliveryJobsDetailPage() {
                                                         <div className="w-0.5 flex-1 bg-border my-1 min-h-6" />
                                                     )}
                                                 </div>
-                                                <div className="pb-4">
+                                                <div className="pb-4 min-w-0">
                                                     <div className="flex items-center gap-1">
                                                         <Pin
                                                             size={12}
                                                             fill="white"
-                                                            className="text-muted-foreground"
+                                                            className="text-muted-foreground shrink-0"
                                                         />
-                                                        <p className="text-sm font-medium">
+                                                        <p className="text-sm font-medium truncate">
                                                             {shipment?.name ||
                                                                 "Unknown Shipment"}
                                                         </p>
@@ -833,9 +831,9 @@ function DeliveryJobsDetailPage() {
                                                         <Pin
                                                             size={10}
                                                             fill="white"
-                                                            className="text-muted-foreground opacity-70"
+                                                            className="text-muted-foreground opacity-70 shrink-0"
                                                         />
-                                                        <p className="text-xs text-muted-foreground">
+                                                        <p className="text-xs text-muted-foreground truncate">
                                                             {stop.dropPoint}
                                                         </p>
                                                     </div>
@@ -850,7 +848,7 @@ function DeliveryJobsDetailPage() {
                                 )}
                         </CardContent>
                     </Card>
-                </Card>
+                </div>
             </div>
         </DashboardLayout>
     );

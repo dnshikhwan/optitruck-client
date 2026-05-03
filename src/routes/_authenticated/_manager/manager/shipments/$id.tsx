@@ -132,17 +132,14 @@ function ShipmentDetails() {
 
     return (
         <DashboardLayout>
-            <div className="flex items-center justify-between">
-                <div>
-                    <div className="flex items-center gap-3">
+            {/* Header */}
+            <div className="flex flex-col gap-2">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-2">
                         <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
-                            <div className="flex items-center">
-                                {t("shipment-details")} <Dot /> {shipment?.name}{" "}
-                                <Dot />
-                                (SHP-
-                                {format(shipment?.createdAt || "", "yyyy")}-
-                                {id.slice(0, 5).toUpperCase()})
-                            </div>
+                            {t("shipment-details")} · {shipment?.name} · (SHP-
+                            {format(shipment?.createdAt || "", "yyyy")}-
+                            {id.slice(0, 5).toUpperCase()})
                         </h1>
                         {shipment?.status &&
                             (() => {
@@ -156,31 +153,33 @@ function ShipmentDetails() {
                                 );
                             })()}
                     </div>
-                    <div className="flex items-center">
-                        <h4 className="scroll-m-20 text-sm font-semibold tracking-tight">
-                            {t("created")}{" "}
-                            {format(shipment?.createdAt || "", "dd MMMM yyyy")}
-                        </h4>
-                        <Dot />
-                        <h4 className="scroll-m-20 text-sm font-semibold tracking-tight">
-                            {t("drop_point_label")} :{" "}
-                            {shipment?.drop_point || "—"}
-                        </h4>
-                        <Dot />
-                        {shipment && (
-                            <h4 className="scroll-m-20 text-sm font-semibold tracking-tight">
-                                {t("scheduled_at_label")} :{" "}
+                </div>
+                <div className="flex flex-wrap items-center gap-x-1 gap-y-1 text-sm font-semibold tracking-tight">
+                    <span>
+                        {t("created")}{" "}
+                        {format(shipment?.createdAt || "", "dd MMMM yyyy")}
+                    </span>
+                    <Dot className="shrink-0" />
+                    <span>
+                        {t("drop_point_label")}: {shipment?.drop_point || "—"}
+                    </span>
+                    {shipment && (
+                        <>
+                            <Dot className="shrink-0" />
+                            <span>
+                                {t("scheduled_at_label")}:{" "}
                                 {format(
                                     shipment.scheduled_at,
                                     "dd MMMM yyyy",
                                 ) || "—"}
-                            </h4>
-                        )}
-                    </div>
+                            </span>
+                        </>
+                    )}
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            {/* Stats — 1 col mobile, 3 col sm+ */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Stat>
                     <StatLabel>{t("total_items")}</StatLabel>
                     <StatValue>{shippingItemsQuantity}</StatValue>
@@ -204,8 +203,9 @@ function ShipmentDetails() {
                 </Stat>
             </div>
 
-            <div className="flex items-stretch w-full gap-4">
-                <Card className="w-1/2 dark:bg-muted/50">
+            {/* Main cards — stacked on mobile, side by side on lg+ */}
+            <div className="flex flex-col lg:flex-row items-stretch w-full gap-4">
+                <Card className="w-full lg:w-1/2 dark:bg-muted/50">
                     <CardHeader>
                         <CardDescription className="flex items-center justify-between text-xs tracking-widest">
                             {t("shipment_items").toUpperCase()}
@@ -224,15 +224,13 @@ function ShipmentDetails() {
                     </CardContent>
                 </Card>
 
-                <Card className="flex-1 dark:bg-muted/50">
+                <Card className="flex-1 min-w-0 dark:bg-muted/50">
                     <CardHeader>
                         <CardDescription className="text-xs uppercase tracking-widest flex items-center gap-2">
                             {t("delivery_job")}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="h-full flex flex-col">
-                        {/* If the shipment has a delivery job attached, show its details.
-                            Otherwise fall back to the empty-state placeholder. */}
                         {deliveryJob ? (
                             <DeliveryJobDetails
                                 deliveryJob={deliveryJob}

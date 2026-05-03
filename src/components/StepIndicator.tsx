@@ -58,7 +58,7 @@ export function StepIndicator({
                                 <div className="flex flex-col items-center text-center">
                                     <span
                                         className={cn(
-                                            "text-sm font-medium whitespace-nowrap",
+                                            "text-sm font-medium text-center wrap-break-word max-w-20",
                                             isCurrent || isCompleted
                                                 ? "text-foreground"
                                                 : "text-muted-foreground",

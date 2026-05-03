@@ -61,12 +61,12 @@ function DeliveryJobs() {
 
     return (
         <DashboardLayout>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
                 <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
                     {t("delivery_jobs")}
                 </h1>
                 <div className="flex items-center gap-2">
-                    <Button variant={"outline"}>
+                    <Button variant="outline">
                         <Download />
                         {t("export")}
                     </Button>

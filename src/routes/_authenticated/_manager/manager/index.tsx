@@ -127,7 +127,9 @@ function IndexDashboard() {
                 </h1>
                 <p>{format(new Date(), "eeee, dd MMMM yyyy")}</p>
             </div>
-            <div className="grid auto-rows-min md:grid-cols-4 gap-4">
+
+            {/* Stats — 2 cols on small, 4 cols on md+ */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {StatisticsCardData.map((card, index) => (
                     <Stat key={index}>
                         <StatLabel className="text-xs uppercase tracking-widest">
@@ -141,8 +143,13 @@ function IndexDashboard() {
                     </Stat>
                 ))}
             </div>
-            <div id="main-content" className="flex items-stretch gap-4">
-                <Card className="flex-1">
+
+            {/* Main content — stacked on mobile, side by side on lg+ */}
+            <div
+                id="main-content"
+                className="flex flex-col lg:flex-row items-stretch gap-4"
+            >
+                <Card className="flex-1 min-w-0">
                     <CardHeader>
                         <CardTitle>{t("latest_shipment")}</CardTitle>
                         <CardDescription>{t("showing_last_5")}</CardDescription>
@@ -155,7 +162,8 @@ function IndexDashboard() {
                         />
                     </CardContent>
                 </Card>
-                <Card className="w-1/3 flex flex-col">
+
+                <Card className="w-full lg:w-1/3 flex flex-col">
                     <CardHeader>
                         <CardTitle>{t("truck_status")}</CardTitle>
                         <CardDescription>
