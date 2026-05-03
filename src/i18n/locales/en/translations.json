@@ -708,5 +708,49 @@
     "max_stack_weight_kg": "Max stacking weight (kg)",
     "max_stack_weight_placeholder": "Leave empty for default",
     "max_stack_weight_hint": "If blank, uses 2× item's own weight",
-    "priority_hint": "Higher values load first when capacity is tight"
+    "priority_hint": "Higher values load first when capacity is tight",
+    "signup": {
+        "heading": "Register your company",
+        "subheading": "A few details and you're ready to roll.",
+        "first_name": "First Name",
+        "first_name_placeholder": "John",
+        "last_name": "Last Name",
+        "last_name_placeholder": "Doe",
+        "email": "Your Email",
+        "email_placeholder": "me@example.com",
+        "company": "Company",
+        "company_placeholder": "Acme Logistics",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "show_password": "Show password",
+        "hide_password": "Hide password",
+        "terms_label": "I agree to the <terms>Terms</terms> & <privacy>Privacy Policy</privacy>",
+        "submit": "Create Account",
+        "success_label": "Account created",
+        "loading_label": "Signing up…",
+        "already_have_account": "Already have an account?",
+        "toast": {
+            "success": "User successfully signed up"
+        },
+        "slide_aria": "Slide {{number}}",
+        "slide1": {
+            "title": "Bring your fleet online.",
+            "body": "Set up your company in minutes — invite drivers, sync vehicles, start optimizing."
+        },
+        "slide2": {
+            "title": "Built for the long haul.",
+            "body": "From single trucks to thousand‑rig fleets — OptiTruck scales with you."
+        },
+        "slide3": {
+            "title": "Smarter from day one.",
+            "body": "Live tracking, AI routing and load matching — out of the box."
+        },
+        "strength": {
+            "too_short": "Too short",
+            "weak": "Weak",
+            "okay": "Okay",
+            "strong": "Strong",
+            "excellent": "Excellent"
+        }
+    }
 }

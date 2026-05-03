@@ -16,8 +16,11 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Check, Eye, EyeOff, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import * as z from "zod";
+import { Trans } from "react-i18next";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export const Route = createFileRoute("/auth/signup")({
     component: RouteComponent,
@@ -76,24 +79,6 @@ async function signUp(signUpForm: SignUpForm) {
     return res.json();
 }
 
-const HERO_SLIDES = [
-    {
-        image: "/images/login-hero-3.jpg",
-        title: "Bring your fleet online.",
-        body: "Set up your company in minutes — invite drivers, sync vehicles, start optimizing.",
-    },
-    {
-        image: "/images/login-hero-1.jpg",
-        title: "Built for the long haul.",
-        body: "From single trucks to thousand‑rig fleets — OptiTruck scales with you.",
-    },
-    {
-        image: "/images/login-hero-2.jpg",
-        title: "Smarter from day one.",
-        body: "Live tracking, AI routing and load matching — out of the box.",
-    },
-];
-
 // Quick visual password-strength heuristic
 function scorePassword(p: string) {
     let s = 0;
@@ -104,16 +89,49 @@ function scorePassword(p: string) {
     if (/[^a-zA-Z0-9]/.test(p)) s++;
     return Math.min(s, 4);
 }
-
 function RouteComponent() {
     const navigate = useNavigate();
     const { auth } = Route.useRouteContext();
+    const { t } = useTranslation();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [slideIdx, setSlideIdx] = useState(0);
+
+    const HERO_SLIDES = [
+        {
+            image: "/images/login-hero-3.jpg",
+            title: t("signup.slide1.title"),
+            body: t("signup.slide1.body"),
+        },
+        {
+            image: "/images/login-hero-1.jpg",
+            title: t("signup.slide2.title"),
+            body: t("signup.slide2.body"),
+        },
+        {
+            image: "/images/login-hero-2.jpg",
+            title: t("signup.slide3.title"),
+            body: t("signup.slide3.body"),
+        },
+    ];
+
+    const strengthLabels = [
+        t("signup.strength.too_short"),
+        t("signup.strength.weak"),
+        t("signup.strength.okay"),
+        t("signup.strength.strong"),
+        t("signup.strength.excellent"),
+    ];
+    const strengthColors = [
+        "bg-destructive",
+        "bg-destructive/70",
+        "bg-amber-500",
+        "bg-emerald-500",
+        "bg-emerald-600",
+    ];
 
     useEffect(() => {
         const id = setInterval(
@@ -127,7 +145,7 @@ function RouteComponent() {
         mutationFn: (data: SignUpForm) => signUp(data),
         onSuccess: async () => {
             setIsSuccess(true);
-            toast.success("User successfully signed up");
+            toast.success(t("signup.toast.success"));
             await new Promise((r) => setTimeout(r, 650));
             navigate({ to: "/auth/login", search: { redirect: "/" } });
             sessionStorage.setItem("showOnboarding", "true");
@@ -152,14 +170,13 @@ function RouteComponent() {
         validators: { onSubmit: signUpFormSchema },
         onSubmit: async ({ value }) => {
             setIsLoading(true);
-            const data: SignUpForm = {
+            mutate({
                 first_name: value.first_name,
                 last_name: value.last_name,
                 email: value.email,
                 password: value.password,
                 company: value.company,
-            };
-            mutate(data);
+            });
         },
     });
 
@@ -168,7 +185,7 @@ function RouteComponent() {
     return (
         <div className="min-h-screen w-full bg-background">
             <div className="w-full min-h-screen grid grid-cols-1 md:grid-cols-2 overflow-hidden bg-card">
-                {/* ─── LEFT: hero image panel ─── */}
+                {/* Hero panel */}
                 <aside className="relative hidden md:flex flex-col justify-between p-8 lg:p-10 text-white overflow-hidden bg-neutral-900">
                     {HERO_SLIDES.map((s, i) => (
                         <div
@@ -193,7 +210,7 @@ function RouteComponent() {
                     />
 
                     <Link
-                        to={"/"}
+                        to="/"
                         className="relative z-10 inline-flex items-center gap-2.5 self-start group"
                     >
                         <span className="flex items-center justify-center w-9 h-9 rounded-full bg-white text-neutral-900 transition-transform group-hover:-rotate-6">
@@ -223,23 +240,21 @@ function RouteComponent() {
                                     key={i}
                                     type="button"
                                     onClick={() => setSlideIdx(i)}
-                                    aria-label={`Slide ${i + 1}`}
-                                    className={`h-1 rounded-full transition-all duration-500 ${
-                                        i === slideIdx
-                                            ? "w-8 bg-white"
-                                            : "w-3 bg-white/40 hover:bg-white/70"
-                                    }`}
+                                    aria-label={t("signup.slide_aria", {
+                                        number: i + 1,
+                                    })}
+                                    className={`h-1 rounded-full transition-all duration-500 ${i === slideIdx ? "w-8 bg-white" : "w-3 bg-white/40 hover:bg-white/70"}`}
                                 />
                             ))}
                         </div>
                     </div>
                 </aside>
 
-                {/* ─── RIGHT: form panel ─── */}
+                {/* Form panel */}
                 <section className="relative flex flex-col bg-card">
                     <header className="flex items-center justify-between px-6 md:px-10 pt-6">
                         <Link
-                            to={"/"}
+                            to="/"
                             className="md:hidden inline-flex items-center gap-2"
                         >
                             <span className="flex items-center justify-center w-8 h-8 rounded-full bg-foreground text-background">
@@ -250,13 +265,14 @@ function RouteComponent() {
                             </span>
                         </Link>
                         <div className="ml-auto flex items-center gap-2">
+                            <LanguageSwitcher />
                             <ModeToggle />
                             {auth.isAuthenticated ? (
                                 <Button
                                     onClick={() => navigate({ to: "/manager" })}
                                     className="rounded-full px-5 h-9 text-sm"
                                 >
-                                    Dashboard
+                                    {t("nav.dashboard")}
                                 </Button>
                             ) : (
                                 <Button
@@ -268,7 +284,7 @@ function RouteComponent() {
                                     }
                                     className="rounded-full px-5 h-9 text-sm"
                                 >
-                                    Log In
+                                    {t("nav.login")}
                                 </Button>
                             )}
                         </div>
@@ -278,10 +294,10 @@ function RouteComponent() {
                         <div className="w-full max-w-md mx-auto">
                             <div className="mb-7">
                                 <h1 className="text-3xl lg:text-[34px] font-semibold tracking-tight text-primary dark:text-primary-foreground leading-[1.1]">
-                                    Register your company
+                                    {t("signup.heading")}
                                 </h1>
                                 <p className="mt-2 text-sm text-muted-foreground">
-                                    A few details and you&apos;re ready to roll.
+                                    {t("signup.subheading")}
                                 </p>
                             </div>
 
@@ -309,7 +325,9 @@ function RouteComponent() {
                                                             htmlFor={field.name}
                                                             className="text-xs font-medium text-muted-foreground"
                                                         >
-                                                            First Name
+                                                            {t(
+                                                                "signup.first_name",
+                                                            )}
                                                         </FieldLabel>
                                                         <Input
                                                             id={field.name}
@@ -329,7 +347,9 @@ function RouteComponent() {
                                                             }
                                                             autoComplete="given-name"
                                                             type="text"
-                                                            placeholder="John"
+                                                            placeholder={t(
+                                                                "signup.first_name_placeholder",
+                                                            )}
                                                             aria-invalid={
                                                                 isInvalid
                                                             }
@@ -364,7 +384,9 @@ function RouteComponent() {
                                                             htmlFor={field.name}
                                                             className="text-xs font-medium text-muted-foreground"
                                                         >
-                                                            Last Name
+                                                            {t(
+                                                                "signup.last_name",
+                                                            )}
                                                         </FieldLabel>
                                                         <Input
                                                             id={field.name}
@@ -384,7 +406,9 @@ function RouteComponent() {
                                                             }
                                                             autoComplete="family-name"
                                                             type="text"
-                                                            placeholder="Doe"
+                                                            placeholder={t(
+                                                                "signup.last_name_placeholder",
+                                                            )}
                                                             aria-invalid={
                                                                 isInvalid
                                                             }
@@ -419,7 +443,7 @@ function RouteComponent() {
                                                         htmlFor={field.name}
                                                         className="text-xs font-medium text-muted-foreground"
                                                     >
-                                                        Your Email
+                                                        {t("signup.email")}
                                                     </FieldLabel>
                                                     <Input
                                                         id={field.name}
@@ -437,7 +461,9 @@ function RouteComponent() {
                                                         }
                                                         autoComplete="email"
                                                         type="email"
-                                                        placeholder="me@example.com"
+                                                        placeholder={t(
+                                                            "signup.email_placeholder",
+                                                        )}
                                                         aria-invalid={isInvalid}
                                                         className="h-11 rounded-md transition-all focus-visible:ring-[3px] focus-visible:ring-primary/15"
                                                     />
@@ -465,10 +491,10 @@ function RouteComponent() {
                                             return (
                                                 <Field data-invalid={isInvalid}>
                                                     <FieldLabel
-                                                        htmlFor="company"
+                                                        htmlFor={field.name}
                                                         className="text-xs font-medium text-muted-foreground"
                                                     >
-                                                        Company
+                                                        {t("signup.company")}
                                                     </FieldLabel>
                                                     <Input
                                                         id={field.name}
@@ -486,7 +512,9 @@ function RouteComponent() {
                                                         }
                                                         type="text"
                                                         autoComplete="organization"
-                                                        placeholder="Acme Logistics"
+                                                        placeholder={t(
+                                                            "signup.company_placeholder",
+                                                        )}
                                                         aria-invalid={isInvalid}
                                                         className="h-11 rounded-md transition-all focus-visible:ring-[3px] focus-visible:ring-primary/15"
                                                     />
@@ -514,27 +542,13 @@ function RouteComponent() {
                                             const score = scorePassword(
                                                 field.state.value,
                                             );
-                                            const labels = [
-                                                "Too short",
-                                                "Weak",
-                                                "Okay",
-                                                "Strong",
-                                                "Excellent",
-                                            ];
-                                            const colors = [
-                                                "bg-destructive",
-                                                "bg-destructive/70",
-                                                "bg-amber-500",
-                                                "bg-emerald-500",
-                                                "bg-emerald-600",
-                                            ];
                                             return (
                                                 <Field data-invalid={isInvalid}>
                                                     <FieldLabel
-                                                        htmlFor="password"
+                                                        htmlFor={field.name}
                                                         className="text-xs font-medium text-muted-foreground"
                                                     >
-                                                        Password
+                                                        {t("signup.password")}
                                                     </FieldLabel>
                                                     <div className="relative">
                                                         <Input
@@ -577,8 +591,12 @@ function RouteComponent() {
                                                             variant="ghost"
                                                             aria-label={
                                                                 showPassword
-                                                                    ? "Hide password"
-                                                                    : "Show password"
+                                                                    ? t(
+                                                                          "signup.hide_password",
+                                                                      )
+                                                                    : t(
+                                                                          "signup.show_password",
+                                                                      )
                                                             }
                                                         >
                                                             {showPassword ? (
@@ -588,7 +606,6 @@ function RouteComponent() {
                                                             )}
                                                         </Button>
                                                     </div>
-                                                    {/* Strength meter */}
                                                     {field.state.value.length >
                                                         0 && (
                                                         <div className="flex items-center gap-2 mt-1">
@@ -598,19 +615,16 @@ function RouteComponent() {
                                                                 ].map((i) => (
                                                                     <div
                                                                         key={i}
-                                                                        className={`h-1 flex-1 rounded-full transition-colors ${
-                                                                            i <
-                                                                            score
-                                                                                ? colors[
-                                                                                      score
-                                                                                  ]
-                                                                                : "bg-border"
-                                                                        }`}
+                                                                        className={`h-1 flex-1 rounded-full transition-colors ${i < score ? strengthColors[score] : "bg-border"}`}
                                                                     />
                                                                 ))}
                                                             </div>
                                                             <span className="text-xs text-muted-foreground tabular-nums">
-                                                                {labels[score]}
+                                                                {
+                                                                    strengthLabels[
+                                                                        score
+                                                                    ]
+                                                                }
                                                             </span>
                                                         </div>
                                                     )}
@@ -638,10 +652,12 @@ function RouteComponent() {
                                             return (
                                                 <Field data-invalid={isInvalid}>
                                                     <FieldLabel
-                                                        htmlFor="confirm_password"
+                                                        htmlFor={field.name}
                                                         className="text-xs font-medium text-muted-foreground"
                                                     >
-                                                        Confirm Password
+                                                        {t(
+                                                            "signup.confirm_password",
+                                                        )}
                                                     </FieldLabel>
                                                     <div className="relative">
                                                         <Input
@@ -684,8 +700,12 @@ function RouteComponent() {
                                                             variant="ghost"
                                                             aria-label={
                                                                 showConfirm
-                                                                    ? "Hide password"
-                                                                    : "Show password"
+                                                                    ? t(
+                                                                          "signup.hide_password",
+                                                                      )
+                                                                    : t(
+                                                                          "signup.show_password",
+                                                                      )
                                                             }
                                                         >
                                                             {showConfirm ? (
@@ -720,9 +740,7 @@ function RouteComponent() {
                                                 <FieldGroup data-slot="checkbox-group">
                                                     <Field
                                                         data-invalid={isInvalid}
-                                                        orientation={
-                                                            "horizontal"
-                                                        }
+                                                        orientation="horizontal"
                                                     >
                                                         <Checkbox
                                                             id={field.name}
@@ -748,21 +766,24 @@ function RouteComponent() {
                                                                 className="text-xs text-foreground/80"
                                                                 htmlFor="acceptTerms"
                                                             >
-                                                                I agree to the{" "}
-                                                                <Link
-                                                                    to={"."}
-                                                                    className="text-primary hover:underline underline-offset-4"
-                                                                >
-                                                                    Terms
-                                                                </Link>{" "}
-                                                                &{" "}
-                                                                <Link
-                                                                    to={"."}
-                                                                    className="text-primary hover:underline underline-offset-4"
-                                                                >
-                                                                    Privacy
-                                                                    Policy
-                                                                </Link>
+                                                                <Trans
+                                                                    i18nKey="signup.terms_label"
+                                                                    components={{
+                                                                        terms: (
+                                                                            <Link
+                                                                                to="."
+                                                                                className="text-primary hover:underline underline-offset-4"
+                                                                            />
+                                                                        ),
+                                                                        privacy:
+                                                                            (
+                                                                                <Link
+                                                                                    to="."
+                                                                                    className="text-primary hover:underline underline-offset-4"
+                                                                                />
+                                                                            ),
+                                                                    }}
+                                                                />
                                                             </FieldLabel>
                                                         </FieldContent>
                                                     </Field>
@@ -783,12 +804,7 @@ function RouteComponent() {
                                     <Button
                                         type="submit"
                                         disabled={isLoading || isSuccess}
-                                        className="
-                                            h-12 mt-2 rounded-md text-[15px] font-medium
-                                            transition-all duration-200
-                                            hover:shadow-lg active:scale-[0.99]
-                                            disabled:opacity-100
-                                        "
+                                        className="h-12 mt-2 rounded-md text-[15px] font-medium transition-all duration-200 hover:shadow-lg active:scale-[0.99] disabled:opacity-100"
                                     >
                                         {isSuccess ? (
                                             <span className="flex items-center gap-2 animate-in fade-in zoom-in-95">
@@ -796,28 +812,32 @@ function RouteComponent() {
                                                     className="h-4 w-4"
                                                     strokeWidth={3}
                                                 />
-                                                <span>Account created</span>
+                                                <span>
+                                                    {t("signup.success_label")}
+                                                </span>
                                             </span>
                                         ) : isLoading ? (
                                             <span className="flex items-center gap-2">
                                                 <Spinner />
-                                                <span>Signing up…</span>
+                                                <span>
+                                                    {t("signup.loading_label")}
+                                                </span>
                                             </span>
                                         ) : (
-                                            "Create Account"
+                                            t("signup.submit")
                                         )}
                                     </Button>
                                 </FieldGroup>
                             </form>
 
                             <p className="mt-7 text-center text-sm text-muted-foreground">
-                                Already have an account?{" "}
+                                {t("signup.already_have_account")}{" "}
                                 <Link
-                                    to={"/auth/login"}
+                                    to="/auth/login"
                                     search={{ redirect: "/" }}
                                     className="text-primary font-medium hover:underline underline-offset-4"
                                 >
-                                    Log In
+                                    {t("nav.login")}
                                 </Link>
                             </p>
                         </div>

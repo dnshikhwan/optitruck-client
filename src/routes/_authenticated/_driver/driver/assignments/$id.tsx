@@ -225,16 +225,13 @@ function StatusProgressBar({ status }: { status: AssignmentStatus }) {
     const currentIndex = STEPS.indexOf(status);
 
     return (
-        <div className="flex items-center w-full">
+        <div className="flex items-start w-full">
             {STEPS.map((step, i) => {
                 const isDone = i < currentIndex;
                 const isCurrent = i === currentIndex;
                 return (
-                    <div
-                        key={step}
-                        className="flex items-center flex-1 min-w-0"
-                    >
-                        <div className="flex items-center gap-1.5 shrink-0">
+                    <div key={step} className="flex items-start flex-1 min-w-0">
+                        <div className="flex flex-col items-center gap-1 shrink-0">
                             {isDone ? (
                                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                             ) : isCurrent ? (
@@ -245,7 +242,7 @@ function StatusProgressBar({ status }: { status: AssignmentStatus }) {
                                 <Circle className="w-5 h-5 text-muted-foreground/30" />
                             )}
                             <span
-                                className={`text-xs whitespace-nowrap ${
+                                className={`text-[10px] text-center leading-tight max-w-14 wrap-break-word ${
                                     isDone
                                         ? "text-emerald-500"
                                         : isCurrent
@@ -258,7 +255,7 @@ function StatusProgressBar({ status }: { status: AssignmentStatus }) {
                         </div>
                         {i < STEPS.length - 1 && (
                             <div
-                                className={`flex-1 h-px mx-2 ${
+                                className={`flex-1 h-px mt-2.5 mx-1 ${
                                     isDone ? "bg-emerald-500/50" : "bg-border"
                                 }`}
                             />
@@ -642,7 +639,7 @@ function AssignmentDetailPage() {
                 </CardContent>
             </Card>
 
-            <div className="flex gap-4 items-stretch h-[700px]">
+            <div className="flex flex-col lg:flex-row gap-4 items-stretch h-[700px]">
                 {layout === "packingFirst" ? (
                     <>
                         <PackingPanel
