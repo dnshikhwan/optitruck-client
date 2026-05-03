@@ -682,5 +682,31 @@
                 ]
             }
         ]
-    }
+    },
+    "item_name_placeholder": "Item name...",
+    "weight_kg": "Weight (kg)",
+    "quantity": "Quantity",
+    "color": "Color",
+    "advanced_handling": "Advanced: handling & constraints",
+    "advanced_handling_desc": "Optional. These fields control how the packing algorithm treats this item — orientation, stackability, fragility, and loading priority.",
+    "this_side_up": "This side up",
+    "this_side_up_desc": "Prevents the item from being tipped onto its side",
+    "allow_rotation": "Allow rotation",
+    "allow_rotation_desc": "Item can spin around its vertical axis (swap length and width)",
+    "stackable": "Stackable",
+    "stackable_desc": "Allow other items to be placed on top",
+    "fragility": "Fragility",
+    "fragility_none": "None — rugged",
+    "fragility_low": "Low — standard care",
+    "fragility_medium": "Medium — limit stacking",
+    "fragility_high": "High — do not stack",
+    "handling_category": "Handling category",
+    "handling_standard": "Standard",
+    "handling_fragile": "Fragile",
+    "handling_hazardous": "Hazardous",
+    "handling_perishable": "Perishable",
+    "max_stack_weight_kg": "Max stacking weight (kg)",
+    "max_stack_weight_placeholder": "Leave empty for default",
+    "max_stack_weight_hint": "If blank, uses 2× item's own weight",
+    "priority_hint": "Higher values load first when capacity is tight"
 }

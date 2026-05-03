@@ -67,7 +67,7 @@ function Shipments() {
         <DashboardLayout>
             <div
                 id="shipments-table"
-                className="flex items-center justify-between"
+                className="flex flex-wrap items-center justify-between gap-3"
             >
                 <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
                     {t("shipments")}
@@ -75,7 +75,7 @@ function Shipments() {
                 <div className="flex items-center gap-2">
                     <Button
                         onClick={() => exportToExcel(shipments, "shipments")}
-                        variant={"outline"}
+                        variant="outline"
                     >
                         <Download />
                         {t("export")}

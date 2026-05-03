@@ -142,8 +142,8 @@ function WarehousePage() {
                 {t("warehouse_settings")}
             </h1>
 
-            <div className="flex gap-4 w-full">
-                <Card id="set-warehouse-location" className="flex-1">
+            <div className="flex flex-col lg:flex-row gap-4 w-full">
+                <Card id="set-warehouse-location" className="flex-1 min-w-0">
                     <CardContent>
                         <form
                             id="warehouse-form"
@@ -262,7 +262,7 @@ function WarehousePage() {
                     </CardContent>
                 </Card>
 
-                <Card className="w-1/3 h-fit">
+                <Card className="w-full lg:w-1/3 h-fit">
                     <CardHeader>
                         <h2 className="text-xs tracking-widest uppercase font-heading">
                             {t("current_warehouse")}

@@ -216,7 +216,7 @@ function CreateDeliveryJob() {
 
     return (
         <DashboardLayout>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap justify-between items-start gap-2">
                 <div>
                     <h1 className="text-xl font-extrabold font-heading">
                         {t("create_delivery_job")}
@@ -226,12 +226,87 @@ function CreateDeliveryJob() {
                     </p>
                 </div>
             </div>
+
             <StepIndicator steps={steps} currentStep={currentStep} />
+
             <div
                 id="create-delivery-job-form"
-                className="flex items-start gap-4"
+                className="flex flex-col lg:flex-row items-start gap-4"
             >
-                {/* Step 1 — Select Shipments */}
+                {/* ── Step 0 — Select Truck ── */}
+                {currentStep === 0 && (
+                    <Card className="w-full bg-transparent border-none shadow-none">
+                        <CardHeader>
+                            <CardTitle>{t("select_truck")}</CardTitle>
+                            <CardDescription>
+                                {t("select_truck_description")}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <RadioGroup
+                                value={selectedTruckId}
+                                onValueChange={setSelectedTruckId}
+                                className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4"
+                            >
+                                {trucks.map((truck) => (
+                                    <Label
+                                        key={truck.id}
+                                        htmlFor={truck.id}
+                                        className="cursor-pointer"
+                                    >
+                                        <Card
+                                            className={`transition-all ${selectedTruckId === truck.id ? "border-primary ring-2 ring-primary/20 bg-primary/5" : "bg-transparent hover:border-muted-foreground/50"}`}
+                                        >
+                                            <CardHeader>
+                                                <div className="flex items-center gap-3">
+                                                    <RadioGroupItem
+                                                        value={truck.id}
+                                                        id={truck.id}
+                                                    />
+                                                    <div>
+                                                        <CardTitle className="text-sm">
+                                                            {truck.model}
+                                                        </CardTitle>
+                                                        <CardDescription>
+                                                            {
+                                                                truck.license_plate
+                                                            }
+                                                        </CardDescription>
+                                                    </div>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent className="px-4 pb-4 flex flex-col gap-3">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div className="bg-muted/50 rounded-lg p-2">
+                                                        <p className="text-xs text-muted-foreground mb-0.5">
+                                                            {t("max_weight")}
+                                                        </p>
+                                                        <p className="text-xs">
+                                                            {truck.max_weight_kg.toLocaleString()}{" "}
+                                                            kg
+                                                        </p>
+                                                    </div>
+                                                    <div className="bg-muted/50 rounded-lg p-2">
+                                                        <p className="text-xs text-muted-foreground mb-0.5">
+                                                            L × W × H (cm)
+                                                        </p>
+                                                        <p className="text-xs">
+                                                            {truck.length_cm} ×{" "}
+                                                            {truck.width_cm} ×{" "}
+                                                            {truck.height_cm}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </Label>
+                                ))}
+                            </RadioGroup>
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* ── Step 1 — Select Shipments ── */}
                 {currentStep === 1 && (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
@@ -243,7 +318,7 @@ function CreateDeliveryJob() {
                         <CardContent className="flex flex-col gap-2">
                             {selectedTruckId && (
                                 <Card className="bg-primary/5 border-primary/30 mb-2">
-                                    <CardContent className="flex items-center justify-between p-4">
+                                    <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
                                         <div>
                                             <p className="text-sm font-medium">
                                                 {isLoadingSuggestions
@@ -291,17 +366,11 @@ function CreateDeliveryJob() {
                                         onClick={() =>
                                             toggleShipment(shipment.id)
                                         }
-                                        className={`cursor-pointer transition-all ${
-                                            selectedShipmentIds.includes(
-                                                shipment.id,
-                                            )
-                                                ? "bg-primary/10 border-primary ring-2 ring-primary/20"
-                                                : "bg-transparent hover:border-muted-foreground/50"
-                                        }`}
+                                        className={`cursor-pointer transition-all ${selectedShipmentIds.includes(shipment.id) ? "bg-primary/10 border-primary ring-2 ring-primary/20" : "bg-transparent hover:border-muted-foreground/50"}`}
                                     >
                                         <CardHeader>
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
+                                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                                <div className="flex flex-wrap items-center gap-2">
                                                     <Checkbox
                                                         checked={selectedShipmentIds.includes(
                                                             shipment.id,
@@ -312,7 +381,7 @@ function CreateDeliveryJob() {
                                                             )
                                                         }
                                                     />
-                                                    {shipment.name}
+                                                    <span>{shipment.name}</span>
                                                     <span className="text-muted-foreground text-xs">
                                                         SHP-
                                                         {format(
@@ -348,8 +417,8 @@ function CreateDeliveryJob() {
                                             </div>
                                         </CardHeader>
                                         <CardContent>
-                                            <div className="flex items-center gap-5">
-                                                <div className="flex flex-col gap-3">
+                                            <div className="flex flex-wrap items-start gap-5">
+                                                <div className="flex flex-col gap-1">
                                                     <CardDescription className="text-xs uppercase tracking-widest">
                                                         {t("drop_point_label")}
                                                     </CardDescription>
@@ -358,7 +427,7 @@ function CreateDeliveryJob() {
                                                         {shipment.drop_point}
                                                     </CardDescription>
                                                 </div>
-                                                <div className="flex flex-col gap-3">
+                                                <div className="flex flex-col gap-1">
                                                     <CardDescription className="text-xs uppercase tracking-widest">
                                                         {t(
                                                             "scheduled_at_label",
@@ -412,84 +481,7 @@ function CreateDeliveryJob() {
                     </Card>
                 )}
 
-                {/* Step 0 — Select Truck */}
-                {currentStep === 0 && (
-                    <Card className="w-full bg-transparent border-none shadow-none">
-                        <CardHeader>
-                            <CardTitle>{t("select_truck")}</CardTitle>
-                            <CardDescription>
-                                {t("select_truck_description")}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <RadioGroup
-                                value={selectedTruckId}
-                                onValueChange={setSelectedTruckId}
-                                className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4"
-                            >
-                                {trucks.map((truck) => (
-                                    <Label
-                                        key={truck.id}
-                                        htmlFor={truck.id}
-                                        className="cursor-pointer"
-                                    >
-                                        <Card
-                                            className={`transition-all ${
-                                                selectedTruckId === truck.id
-                                                    ? "border-primary ring-2 ring-primary/20 bg-primary/5"
-                                                    : "bg-transparent hover:border-muted-foreground/50"
-                                            }`}
-                                        >
-                                            <CardHeader>
-                                                <div className="flex items-center gap-3">
-                                                    <RadioGroupItem
-                                                        value={truck.id}
-                                                        id={truck.id}
-                                                    />
-                                                    <div>
-                                                        <CardTitle className="text-sm">
-                                                            {truck.model}
-                                                        </CardTitle>
-                                                        <CardDescription>
-                                                            {
-                                                                truck.license_plate
-                                                            }
-                                                        </CardDescription>
-                                                    </div>
-                                                </div>
-                                            </CardHeader>
-                                            <CardContent className="px-4 pb-4 flex flex-col gap-3">
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <div className="bg-muted/50 rounded-lg p-2">
-                                                        <p className="text-xs text-muted-foreground mb-0.5">
-                                                            {t("max_weight")}
-                                                        </p>
-                                                        <p className="text-xs">
-                                                            {truck.max_weight_kg.toLocaleString()}{" "}
-                                                            kg
-                                                        </p>
-                                                    </div>
-                                                    <div className="bg-muted/50 rounded-lg p-2">
-                                                        <p className="text-xs text-muted-foreground mb-0.5">
-                                                            L × W × H (cm)
-                                                        </p>
-                                                        <p className="text-xs">
-                                                            {truck.length_cm} ×{" "}
-                                                            {truck.width_cm} ×{" "}
-                                                            {truck.height_cm}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </Card>
-                                    </Label>
-                                ))}
-                            </RadioGroup>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Step 2 — Review & Confirm */}
+                {/* ── Step 2 — Review & Confirm ── */}
                 {currentStep === 2 && (
                     <Card className="w-full bg-transparent border-none shadow-none">
                         <CardHeader>
@@ -507,7 +499,7 @@ function CreateDeliveryJob() {
                                         </CardDescription>
                                     </CardHeader>
                                     <CardContent>
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex flex-wrap items-center justify-between gap-4">
                                             <div className="flex items-center gap-4">
                                                 <TruckIcon />
                                                 <div>
@@ -574,19 +566,18 @@ function CreateDeliveryJob() {
                                                 )}
                                                 indicatorClassName={
                                                     selectedShipmentsTotalVolume >
-                                                    (selectedTruck.length_cm *
-                                                        selectedTruck.width_cm *
-                                                        selectedTruck.height_cm) /
-                                                        1000000
+                                                        (selectedTruck.length_cm *
+                                                            selectedTruck.width_cm *
+                                                            selectedTruck.height_cm) /
+                                                            1000000 ||
+                                                    selectedShipmentsTotalVolume /
+                                                        ((selectedTruck.length_cm *
+                                                            selectedTruck.width_cm *
+                                                            selectedTruck.height_cm) /
+                                                            1000000) >
+                                                        0.8
                                                         ? "bg-red-500/70"
-                                                        : selectedShipmentsTotalVolume /
-                                                                ((selectedTruck.length_cm *
-                                                                    selectedTruck.width_cm *
-                                                                    selectedTruck.height_cm) /
-                                                                    1000000) >
-                                                            0.8
-                                                          ? "bg-red-500/70"
-                                                          : "bg-primary/70"
+                                                        : "bg-primary/70"
                                                 }
                                             />
                                             <div className="text-xs text-muted-foreground">
@@ -610,9 +601,7 @@ function CreateDeliveryJob() {
                                                     /{" "}
                                                     {Number(
                                                         selectedTruck.max_weight_kg,
-                                                    )
-                                                        .toFixed(2)
-                                                        .toLocaleString()}{" "}
+                                                    ).toFixed(2)}{" "}
                                                     kg
                                                 </span>
                                             </div>
@@ -625,13 +614,12 @@ function CreateDeliveryJob() {
                                                 )}
                                                 indicatorClassName={
                                                     selectedShipmentsTotalWeight >
-                                                    selectedTruck.max_weight_kg
+                                                        selectedTruck.max_weight_kg ||
+                                                    selectedShipmentsTotalWeight /
+                                                        selectedTruck.max_weight_kg >
+                                                        0.8
                                                         ? "bg-red-500/70"
-                                                        : selectedShipmentsTotalWeight /
-                                                                selectedTruck.max_weight_kg >
-                                                            0.8
-                                                          ? "bg-red-500/70"
-                                                          : "bg-primary/70"
+                                                        : "bg-primary/70"
                                                 }
                                             />
                                             <div className="text-xs text-muted-foreground">
@@ -659,7 +647,7 @@ function CreateDeliveryJob() {
                                     {selectedShipments.map(
                                         (shipment, index) => (
                                             <Card key={shipment.id}>
-                                                <CardContent className="flex items-center justify-between">
+                                                <CardContent className="flex flex-wrap items-center justify-between gap-3">
                                                     <div className="flex items-center gap-3">
                                                         <Badge variant="outline">
                                                             {index + 1}
@@ -672,7 +660,7 @@ function CreateDeliveryJob() {
                                                                 <Pin
                                                                     fill="white"
                                                                     size={15}
-                                                                />
+                                                                />{" "}
                                                                 {
                                                                     shipment.drop_point
                                                                 }
@@ -710,99 +698,81 @@ function CreateDeliveryJob() {
                     </Card>
                 )}
 
-                {/* Job Summary sidebar */}
-                <Card className="w-2/3 sticky top-4">
+                {/* ── Job Summary sidebar ── */}
+                <Card className="w-full lg:w-80 lg:sticky lg:top-4 shrink-0">
                     <CardHeader>
                         <CardDescription className="uppercase text-xs tracking-widest">
                             {t("job_summary")}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Card className="border-none">
-                            <CardContent className="flex items-center justify-between">
-                                <CardDescription>
-                                    {t("shipments")}
-                                </CardDescription>
-                                <CardDescription>
-                                    {selectedShipmentIds.length === 0
+                        {[
+                            {
+                                label: t("shipments"),
+                                value:
+                                    selectedShipmentIds.length === 0
                                         ? t("none_selected")
                                         : t("selected_count", {
                                               count: selectedShipmentIds.length,
-                                          })}
-                                </CardDescription>
-                            </CardContent>
-                        </Card>
-                        <Separator />
-                        <Card className="border-none">
-                            <CardContent className="flex items-center justify-between">
-                                <CardDescription>
-                                    {t("total_items")}
-                                </CardDescription>
-                                <CardDescription>
-                                    {selectedShipmentIds.length === 0
+                                          }),
+                            },
+                            {
+                                label: t("total_items"),
+                                value:
+                                    selectedShipmentIds.length === 0
                                         ? "—"
-                                        : selectedShipmentsTotalItems}
-                                </CardDescription>
-                            </CardContent>
-                        </Card>
-                        <Separator />
-                        <Card className="border-none">
-                            <CardContent className="flex items-center justify-between">
-                                <CardDescription>
-                                    {t("total_weight")}
-                                </CardDescription>
-                                <CardDescription>
-                                    {selectedShipmentIds.length === 0
+                                        : selectedShipmentsTotalItems,
+                            },
+                            {
+                                label: t("total_weight"),
+                                value:
+                                    selectedShipmentIds.length === 0
                                         ? "—"
-                                        : `${selectedShipmentsTotalWeight} kg${selectedTruck ? ` / ${selectedTruck.max_weight_kg} kg` : ""}`}
-                                </CardDescription>
-                            </CardContent>
-                        </Card>
-                        <Separator />
+                                        : `${selectedShipmentsTotalWeight} kg${selectedTruck ? ` / ${selectedTruck.max_weight_kg} kg` : ""}`,
+                            },
+                            {
+                                label: t("trucks"),
+                                value: selectedTruck
+                                    ? selectedTruck.model
+                                    : t("not_selected"),
+                            },
+                            {
+                                label: t("max_capacity"),
+                                value: selectedTruck
+                                    ? `${selectedTruck.max_weight_kg} kg`
+                                    : "—",
+                            },
+                        ].map(({ label, value }) => (
+                            <div key={label}>
+                                <Card className="border-none">
+                                    <CardContent className="flex items-center justify-between gap-2">
+                                        <CardDescription>
+                                            {label}
+                                        </CardDescription>
+                                        <CardDescription className="text-right">
+                                            {value}
+                                        </CardDescription>
+                                    </CardContent>
+                                </Card>
+                                <Separator />
+                            </div>
+                        ))}
                         <Card className="border-none">
-                            <CardContent className="flex items-center justify-between">
-                                <CardDescription>{t("trucks")}</CardDescription>
-                                <CardDescription>
-                                    {selectedTruck
-                                        ? selectedTruck.model
-                                        : t("not_selected")}
-                                </CardDescription>
-                            </CardContent>
-                        </Card>
-                        <Separator />
-                        <Card className="border-none">
-                            <CardContent className="flex items-center justify-between">
-                                <CardDescription>
-                                    {t("max_capacity")}
-                                </CardDescription>
-                                <CardDescription>
-                                    {selectedTruck
-                                        ? `${selectedTruck.max_weight_kg} kg`
-                                        : "—"}
-                                </CardDescription>
-                            </CardContent>
-                        </Card>
-                        <Separator />
-                        <Card className="border-none">
-                            <CardDescription className="text-xs tracking-widest uppercase">
+                            <CardDescription className="text-xs tracking-widest uppercase px-6 pt-4">
                                 {t("drop_points")}
                             </CardDescription>
-                            <CardContent>
-                                <CardDescription className="flex flex-col gap-2">
-                                    {selectedShipments.map(
-                                        (shipment, index) => (
-                                            <div
-                                                key={shipment.id}
-                                                className="flex items-center gap-1"
-                                            >
-                                                <Badge>{index + 1}</Badge>
-                                                <CardDescription>
-                                                    {shipment.drop_point}
-                                                </CardDescription>
-                                            </div>
-                                        ),
-                                    )}
-                                </CardDescription>
+                            <CardContent className="flex flex-col gap-2 pt-2">
+                                {selectedShipments.map((shipment, index) => (
+                                    <div
+                                        key={shipment.id}
+                                        className="flex items-center gap-1"
+                                    >
+                                        <Badge>{index + 1}</Badge>
+                                        <CardDescription>
+                                            {shipment.drop_point}
+                                        </CardDescription>
+                                    </div>
+                                ))}
                             </CardContent>
                         </Card>
                     </CardContent>
