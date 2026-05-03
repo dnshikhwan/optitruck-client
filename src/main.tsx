@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
+import { SpeedInsights } from "@vercel/speed-insights/react";
 // import the localisation i18n
 import "./i18n/config.ts";
 
@@ -53,6 +53,7 @@ if (rootElement && !rootElement.innerHTML) {
                     buttonPosition="bottom-left"
                 />
             </QueryClientProvider>
+            <SpeedInsights />
         </StrictMode>,
     );
 }
