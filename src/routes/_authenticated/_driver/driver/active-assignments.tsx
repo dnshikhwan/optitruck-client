@@ -21,6 +21,7 @@ import {
     AlertCircle,
     Package,
 } from "lucide-react";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_driver/driver/active-assignments",
@@ -342,7 +343,12 @@ function DriverDashboard() {
         );
     });
 
-    if (isLoading) return <Spinner />;
+    if (isLoading)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     return (
         <DashboardLayout>

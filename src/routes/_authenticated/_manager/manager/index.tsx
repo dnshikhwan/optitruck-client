@@ -26,6 +26,7 @@ import type { Truck } from "@/interfaces/trucks";
 import { useMemo } from "react";
 import { createShipmentColumns } from "@/components/tables/shipments/columns";
 import { format } from "date-fns";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute("/_authenticated/_manager/manager/")({
     component: IndexDashboard,
@@ -116,7 +117,12 @@ function IndexDashboard() {
             packingEfficiency,
         ],
     );
-    if (isLoading) return <Spinner />;
+    if (isLoading)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     return (
         <DashboardLayout>

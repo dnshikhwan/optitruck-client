@@ -30,6 +30,7 @@ import {
     ArrowLeftRight,
 } from "lucide-react";
 import { PackingViewer } from "@/components/3DPackingViewer";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_driver/driver/assignments/$id",
@@ -554,7 +555,12 @@ function AssignmentDetailPage() {
         },
     });
 
-    if (isLoading || !assignment) return <Spinner />;
+    if (isLoading || !assignment)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     const layout = getPanelLayout(assignment.status);
     const actionLabelKey = ACTION_LABELS[assignment.status];

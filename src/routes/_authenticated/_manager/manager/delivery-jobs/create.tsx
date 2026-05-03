@@ -34,6 +34,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/delivery-jobs/create",
@@ -134,7 +135,12 @@ function CreateDeliveryJob() {
         },
     });
 
-    if (isLoadingShipments) return <Spinner />;
+    if (isLoadingShipments)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     const toggleShipment = (id: string) => {
         setSelectedShipmentIds((prev) =>

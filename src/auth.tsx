@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { registerLogoutCallback, setAccessToken } from "./utils/tokenStore";
 import { Spinner } from "./components/ui/spinner";
 import { useQueryClient } from "@tanstack/react-query";
+import { CustomSpinner } from "./components/custom-spinner";
 
 export interface User {
     id: string;
@@ -92,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <Spinner />
+                <CustomSpinner />
             </div>
         );
     }

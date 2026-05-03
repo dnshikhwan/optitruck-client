@@ -12,6 +12,7 @@ import { exportToExcel } from "@/utils/excel";
 import { Download, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useMemo } from "react";
+import { CustomSpinner } from "@/components/custom-spinner";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/shipments/",
@@ -61,7 +62,12 @@ function Shipments() {
         },
     });
 
-    if (isLoading) return <Spinner />;
+    if (isLoading)
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <CustomSpinner />
+            </div>
+        );
 
     return (
         <DashboardLayout>
