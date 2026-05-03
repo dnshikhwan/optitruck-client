@@ -13,7 +13,7 @@ import apiFetch from "@/utils/apiFetch";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { format } from "date-fns";
-import { Dot, Printer } from "lucide-react";
+import { Printer } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useReactToPrint } from "react-to-print";
@@ -150,7 +150,7 @@ function DeliveryJobResultPage() {
             >
                 <Card className="flex-1 w-full border-none shadow-none">
                     <CardHeader className="no-print">
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
                             <div className="flex flex-col">
                                 <CardTitle>{t("header.title")}</CardTitle>
                                 <CardDescription>
@@ -162,13 +162,25 @@ function DeliveryJobResultPage() {
                             </Button>
                         </div>
                     </CardHeader>
+
                     <CardContent className="flex flex-col">
                         <Card className="print:border-none print:shadow-none">
                             <CardHeader>
-                                <CardTitle className="flex items-center">
-                                    {t("report.title")} <Dot /> OptiTruck
-                                </CardTitle>
-                                <div className="flex flex-col items-end">
+                                <div className="flex flex-col gap-1 mb-2">
+                                    <div className="flex flex-wrap items-baseline gap-2">
+                                        <CardTitle>
+                                            {t("report.title")}
+                                        </CardTitle>
+                                        <span className="text-muted-foreground">
+                                            ·
+                                        </span>
+                                        <CardTitle>OptiTruck</CardTitle>
+                                    </div>
+                                    <CardDescription>
+                                        {t("report.subtitle")}
+                                    </CardDescription>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
                                     <CardTitle>
                                         DJ-
                                         {format(
@@ -188,7 +200,9 @@ function DeliveryJobResultPage() {
                                 <CardDescription>
                                     {t("report.subtitle")}
                                 </CardDescription>
-                                <div className="grid grid-cols-5 mt-4">
+
+                                {/* Meta cards — 2 cols mobile, 3 sm, 5 xl */}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 print:grid-cols-5 gap-3 mt-4">
                                     <Card>
                                         <CardHeader>
                                             <CardDescription className="font-heading uppercase tracking-widest text-xs">
@@ -283,14 +297,16 @@ function DeliveryJobResultPage() {
                                     </Card>
                                 </div>
                             </CardHeader>
+
                             <CardContent>
+                                {/* Summary */}
                                 <Card className="border-none shadow-none">
                                     <CardHeader>
                                         <CardTitle>
                                             {t("summary.title")}
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="grid grid-cols-5 print:grid-cols-3 gap-3">
+                                    <CardContent className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 print:grid-cols-5 gap-3">
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="font-heading uppercase tracking-widest text-xs">
@@ -376,7 +392,10 @@ function DeliveryJobResultPage() {
                                         </Card>
                                     </CardContent>
                                 </Card>
+
                                 <Separator />
+
+                                {/* Comparison table */}
                                 <Card className="border-none shadow-none">
                                     <CardHeader>
                                         <CardTitle>
@@ -423,14 +442,17 @@ function DeliveryJobResultPage() {
                                         />
                                     </CardContent>
                                 </Card>
+
                                 <Separator />
+
+                                {/* Performance charts — 1 col mobile, 2 md, 3 lg */}
                                 <Card className="border-none shadow-none break-before-page print:mt-5">
                                     <CardHeader>
                                         <CardTitle>
                                             {t("performance.title")}
                                         </CardTitle>
                                     </CardHeader>
-                                    <CardContent className="grid print:grid-cols-1 grid-cols-3 gap-3">
+                                    <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 print:grid-cols-3 gap-3">
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="uppercase tracking-widest text-xs">
@@ -440,7 +462,7 @@ function DeliveryJobResultPage() {
                                             <CardContent>
                                                 <ChartContainer
                                                     config={chartConfig}
-                                                    className="w-full"
+                                                    className="w-full min-h-[200px] max-h-[300px]"
                                                 >
                                                     <BarChart data={chartData}>
                                                         <CartesianGrid
@@ -451,13 +473,8 @@ function DeliveryJobResultPage() {
                                                             tickMargin={10}
                                                             axisLine={false}
                                                             tickFormatter={(
-                                                                value,
-                                                            ) =>
-                                                                value.slice(
-                                                                    0,
-                                                                    5,
-                                                                )
-                                                            }
+                                                                v,
+                                                            ) => v.slice(0, 5)}
                                                         />
                                                         <YAxis
                                                             tickLine={false}
@@ -479,13 +496,14 @@ function DeliveryJobResultPage() {
                                                                 position="top"
                                                                 offset={12}
                                                                 className="fill-foreground"
-                                                                fontSize={12}
+                                                                fontSize={11}
                                                             />
                                                         </Bar>
                                                     </BarChart>
                                                 </ChartContainer>
                                             </CardContent>
                                         </Card>
+
                                         <Card>
                                             <CardHeader>
                                                 <CardDescription className="uppercase tracking-widest text-xs">
@@ -495,7 +513,7 @@ function DeliveryJobResultPage() {
                                             <CardContent>
                                                 <ChartContainer
                                                     config={chartConfig}
-                                                    className="w-full"
+                                                    className="w-full min-h-[200px] max-h-[300px]"
                                                 >
                                                     <BarChart data={chartData}>
                                                         <CartesianGrid
@@ -507,13 +525,8 @@ function DeliveryJobResultPage() {
                                                             tickMargin={10}
                                                             axisLine={false}
                                                             tickFormatter={(
-                                                                value,
-                                                            ) =>
-                                                                value.slice(
-                                                                    0,
-                                                                    5,
-                                                                )
-                                                            }
+                                                                v,
+                                                            ) => v.slice(0, 5)}
                                                         />
                                                         <YAxis
                                                             tickLine={false}
@@ -535,13 +548,14 @@ function DeliveryJobResultPage() {
                                                                 position="top"
                                                                 offset={12}
                                                                 className="fill-foreground"
-                                                                fontSize={12}
+                                                                fontSize={11}
                                                             />
                                                         </Bar>
                                                     </BarChart>
                                                 </ChartContainer>
                                             </CardContent>
                                         </Card>
+
                                         <Card className="break-before-page print:mt-5">
                                             <CardHeader>
                                                 <CardDescription className="uppercase tracking-widest text-xs">
@@ -551,7 +565,7 @@ function DeliveryJobResultPage() {
                                             <CardContent>
                                                 <ChartContainer
                                                     config={chartConfig}
-                                                    className="w-full"
+                                                    className="w-full min-h-[200px] max-h-[300px]"
                                                 >
                                                     <BarChart data={chartData}>
                                                         <CartesianGrid
@@ -563,13 +577,8 @@ function DeliveryJobResultPage() {
                                                             tickMargin={10}
                                                             axisLine={false}
                                                             tickFormatter={(
-                                                                value,
-                                                            ) =>
-                                                                value.slice(
-                                                                    0,
-                                                                    5,
-                                                                )
-                                                            }
+                                                                v,
+                                                            ) => v.slice(0, 5)}
                                                         />
                                                         <YAxis
                                                             tickLine={false}
