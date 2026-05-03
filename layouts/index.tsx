@@ -26,8 +26,8 @@ import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { ModeToggle } from "@/components/mode-toggle";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/language-switcher";
-
 import { AppBreadcrumb } from "@/components/AppBreadcrumb";
+import { useNextStep } from "nextstepjs";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -47,10 +47,22 @@ interface NavSection {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
     const [sidebarOpen, setSidebarOpen] = React.useState(true);
-
     const { t } = useTranslation();
     let router;
     let auth;
+    const navigate = useNavigate();
+    const { startNextStep } = useNextStep();
+
+    React.useEffect(() => {
+        if (sessionStorage.getItem("showOnboarding") === "true") {
+            sessionStorage.removeItem("showOnboarding");
+            console.log("Starting tour...");
+            setTimeout(() => {
+                console.log("Calling startNextStep");
+                startNextStep("signupTour");
+            }, 500);
+        }
+    }, []);
 
     try {
         router = useRouter();
@@ -99,7 +111,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
         );
     }
-    const navigate = useNavigate();
 
     const driverNavigationSections: NavSection[] = [
         {
@@ -338,7 +349,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>
-                                    My Account
+                                    {t("my_account")}
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
@@ -352,7 +363,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                         });
                                     }}
                                 >
-                                    Log out
+                                    {t("logout")}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -412,7 +423,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                     className="w-56"
                                 >
                                     <DropdownMenuLabel>
-                                        My Account
+                                        {t("my_account")}
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
@@ -426,7 +437,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                             });
                                         }}
                                     >
-                                        Log out
+                                        {t("logout")}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>

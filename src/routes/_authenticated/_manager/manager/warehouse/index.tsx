@@ -135,12 +135,15 @@ function WarehousePage() {
 
     return (
         <DashboardLayout>
-            <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
+            <h1
+                id="profile-section"
+                className="scroll-m-20 text-xl font-extrabold font-heading"
+            >
                 {t("warehouse_settings")}
             </h1>
 
             <div className="flex gap-4 w-full">
-                <Card className="flex-1">
+                <Card id="set-warehouse-location" className="flex-1">
                     <CardContent>
                         <form
                             id="warehouse-form"

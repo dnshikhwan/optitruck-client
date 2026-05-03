@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import "../styles.css";
 import { useAuth } from "@/auth";
 import { Button } from "./ui/button";
+import { ModeToggle } from "./mode-toggle";
+import { useTranslation } from "react-i18next";
 
 const HERO_DARK = "oklch(0.148 0.004 228.8)"; // matches --foreground in light root
 const CARD_DARK = "oklch(0.218 0.008 223.9)"; // matches dark card token
@@ -30,7 +33,7 @@ const Eyebrow = ({
 );
 
 const Check = () => (
-    <span className="grid place-items-center w-5 h-5 mt-[2px] flex-shrink-0 bg-chart-3/15 text-chart-3">
+    <span className="grid place-items-center w-5 h-5 mt-0.5 shrink-0 bg-chart-3/15 text-chart-3">
         <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">
             <path
                 d="M2 6.5L4.5 9L10 3.5"
@@ -48,106 +51,234 @@ const Check = () => (
 // ============================================================
 function Nav() {
     const { isAuthenticated, logout, hasRole } = useAuth();
+    const { t } = useTranslation();
     const navigate = useNavigate();
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const navLinks = [
+        { label: t("nav.algorithms"), href: "#algorithms" },
+        { label: t("nav.loading3d"), href: "#loading" },
+        { label: t("nav.routing"), href: "#routing" },
+        { label: t("nav.howItWorks"), href: "#how" },
+        { label: t("nav.pricing"), href: "#pricing" },
+    ];
+
     return (
-        <nav className="sticky top-0 z-50 bg-secondary border-b border-border">
-            <div className="max-w-[1280px] mx-auto px-8 flex items-center justify-between h-[68px]">
-                <div className="flex items-center gap-2.5 font-semibold text-[17px] tracking-[-0.02em]">
-                    <div className="w-7 h-7 bg-foreground text-secondary grid place-items-center">
-                        <svg
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            className="w-4 h-4"
-                        >
-                            <rect
-                                x="1.5"
-                                y="4"
-                                width="9"
-                                height="7"
-                                rx="1"
-                                stroke="currentColor"
-                                strokeWidth="1.4"
-                            />
-                            <path
-                                d="M10.5 6h2.2L14.5 8v3h-4"
-                                stroke="currentColor"
-                                strokeWidth="1.4"
-                                strokeLinejoin="round"
-                            />
-                            <circle
-                                cx="4.5"
-                                cy="12"
-                                r="1.4"
-                                fill="currentColor"
-                            />
-                            <circle
-                                cx="11.5"
-                                cy="12"
-                                r="1.4"
-                                fill="currentColor"
-                            />
-                        </svg>
+        <>
+            <nav className="sticky top-0 z-50 bg-secondary border-b border-border">
+                <div className="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between h-[68px]">
+                    {/* Logo */}
+                    <div className="flex items-center gap-2.5 font-semibold text-[17px] tracking-[-0.02em] shrink-0">
+                        <div className="w-7 h-7 bg-foreground text-secondary grid place-items-center">
+                            <svg
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                className="w-4 h-4"
+                            >
+                                <rect
+                                    x="1.5"
+                                    y="4"
+                                    width="9"
+                                    height="7"
+                                    rx="1"
+                                    stroke="currentColor"
+                                    strokeWidth="1.4"
+                                />
+                                <path
+                                    d="M10.5 6h2.2L14.5 8v3h-4"
+                                    stroke="currentColor"
+                                    strokeWidth="1.4"
+                                    strokeLinejoin="round"
+                                />
+                                <circle
+                                    cx="4.5"
+                                    cy="12"
+                                    r="1.4"
+                                    fill="currentColor"
+                                />
+                                <circle
+                                    cx="11.5"
+                                    cy="12"
+                                    r="1.4"
+                                    fill="currentColor"
+                                />
+                            </svg>
+                        </div>
+                        OptiTruck
                     </div>
-                    OptiTruck
-                </div>
-                <div className="flex gap-1 items-center">
-                    {[
-                        ["Algorithms", "#algorithms"],
-                        ["3D Loading", "#loading"],
-                        ["Routing", "#routing"],
-                        ["How it works", "#how"],
-                        ["Pricing", "#pricing"],
-                    ].map(([label, href]) => (
-                        <a
-                            key={href}
-                            href={href}
-                            className="px-3.5 py-2 text-sm text-foreground/70 hover:bg-foreground/5 hover:text-foreground transition"
+
+                    {/* Desktop nav links — hidden on mobile */}
+                    <div className="hidden lg:flex gap-1 items-center">
+                        {navLinks.map((item) => (
+                            <a
+                                key={item.href}
+                                href={item.href}
+                                className="px-3.5 py-2 text-sm text-foreground/70 hover:bg-foreground/5 hover:text-foreground transition"
+                            >
+                                {item.label}
+                            </a>
+                        ))}
+                    </div>
+
+                    {/* Desktop auth — hidden on mobile */}
+                    <div className="hidden lg:flex items-center gap-2.5">
+                        <ModeToggle />
+                        {!isAuthenticated ? (
+                            <>
+                                <Link
+                                    to="/auth/login"
+                                    search={{ redirect: "" }}
+                                >
+                                    <span className="text-sm px-3.5 py-2 cursor-pointer">
+                                        {t("nav.login")}
+                                    </span>
+                                </Link>
+                                <Button
+                                    onClick={() =>
+                                        navigate({ to: "/auth/signup" })
+                                    }
+                                >
+                                    {t("nav.signup")}
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button
+                                    onClick={() => {
+                                        if (hasRole("manager")) {
+                                            navigate({ to: "/manager" });
+                                        } else {
+                                            navigate({
+                                                to: "/driver/active-assignments",
+                                            });
+                                        }
+                                    }}
+                                >
+                                    {t("nav.dashboard")}
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => logout()}
+                                >
+                                    {t("nav.logout")}
+                                </Button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Mobile right side */}
+                    <div className="flex lg:hidden items-center gap-1">
+                        <ModeToggle />
+                        <button
+                            aria-label="Toggle menu"
+                            aria-expanded={menuOpen}
+                            onClick={() =>
+                                setMenuOpen((prev: boolean) => !prev)
+                            }
+                            className="w-10 h-10 grid place-items-center text-foreground hover:bg-foreground/5 transition"
                         >
-                            {label}
-                        </a>
-                    ))}
+                            {menuOpen ? (
+                                <svg
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        d="M5 5l10 10M15 5L5 15"
+                                        stroke="currentColor"
+                                        strokeWidth="1.8"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                            ) : (
+                                <svg
+                                    viewBox="0 0 20 20"
+                                    fill="none"
+                                    className="w-5 h-5"
+                                >
+                                    <path
+                                        d="M3 5h14M3 10h14M3 15h14"
+                                        stroke="currentColor"
+                                        strokeWidth="1.8"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                            )}
+                        </button>
+                    </div>
                 </div>
-                <div className="flex items-center gap-2.5">
-                    {!isAuthenticated ? (
-                        <>
-                            <Link
-                                to="/auth/login"
-                                search={{
-                                    redirect: "",
-                                }}
+            </nav>
+
+            {/* Mobile drawer */}
+            {menuOpen && (
+                <div className="lg:hidden fixed inset-x-0 top-[68px] z-40 bg-secondary border-b border-border shadow-lg">
+                    <div className="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex flex-col gap-1">
+                        {navLinks.map((item) => (
+                            <a
+                                key={item.href}
+                                href={item.href}
+                                onClick={() => setMenuOpen(false)}
+                                className="px-3 py-3 text-sm text-foreground/70 hover:bg-foreground/5 hover:text-foreground transition"
                             >
-                                <a href="#" className="text-sm px-3.5 py-2">
-                                    Sign in
-                                </a>
-                            </Link>
-                            <button className="bg-primary text-primary-foreground px-4.5 py-2.5 text-sm font-medium hover:brightness-110 transition">
-                                Get a demo
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <Button
-                                onClick={() =>
-                                    hasRole("manager")
-                                        ? navigate({ to: "/manager" })
-                                        : navigate({
-                                              to: "/driver/active-assignments",
-                                          })
-                                }
-                            >
-                                Dashboard
-                            </Button>
-                            <Button
-                                onClick={() => logout()}
-                                variant={"outline"}
-                            >
-                                Logout
-                            </Button>
-                        </>
-                    )}
+                                {item.label}
+                            </a>
+                        ))}
+
+                        <div className="mt-3 pt-3 border-t border-border flex flex-col gap-2">
+                            {!isAuthenticated ? (
+                                <>
+                                    <Link
+                                        to="/auth/login"
+                                        search={{ redirect: "" }}
+                                        onClick={() => setMenuOpen(false)}
+                                        className="block w-full text-center text-sm px-4 py-2.5 border border-border hover:bg-foreground/5 transition"
+                                    >
+                                        {t("nav.login")}
+                                    </Link>
+                                    <Button
+                                        className="w-full"
+                                        onClick={() => {
+                                            setMenuOpen(false);
+                                            navigate({ to: "/auth/signup" });
+                                        }}
+                                    >
+                                        {t("nav.signup")}
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        className="w-full"
+                                        onClick={() => {
+                                            setMenuOpen(false);
+                                            if (hasRole("manager")) {
+                                                navigate({ to: "/manager" });
+                                            } else {
+                                                navigate({
+                                                    to: "/driver/active-assignments",
+                                                });
+                                            }
+                                        }}
+                                    >
+                                        {t("nav.dashboard")}
+                                    </Button>
+                                    <Button
+                                        className="w-full"
+                                        variant="outline"
+                                        onClick={() => {
+                                            setMenuOpen(false);
+                                            logout();
+                                        }}
+                                    >
+                                        {t("nav.logout")}
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            )}
+        </>
     );
 }
 
@@ -155,9 +286,10 @@ function Nav() {
 // HERO
 // ============================================================
 function Hero() {
+    const { t } = useTranslation();
     return (
         <section className="bg-secondary py-14 pb-20 relative overflow-hidden">
-            <div className="max-w-[1280px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-16 items-center">
+            <div className="max-w-7xl mx-auto px-5 sm:px-8 grid grid-cols-1 lg:grid-cols-[1.05fr_1fr] gap-16 items-center">
                 {/* Text */}
                 <div>
                     <span className="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.12em] text-chart-3 font-medium px-3 py-1.5 bg-chart-3/10 border border-chart-3/20">
@@ -168,62 +300,57 @@ function Hero() {
                                     "0 0 0 3px var(--color-chart-3, currentColor) / 18%",
                             }}
                         />
-                        3D loading + multi-stop routing
+                        {t("hero.badge")}
                     </span>
                     <h1
                         className="font-semibold leading-[0.94] tracking-[-0.035em] mt-5 mb-6"
                         style={{ fontSize: "clamp(48px, 6.2vw, 88px)" }}
                     >
-                        Smarter loading,
+                        {t("hero.heading1")}
                         <br />
                         <ItalSerif>smarter</ItalSerif>{" "}
-                        <span className="text-chart-3">routing.</span>
+                        <span className="text-chart-3">
+                            {t("hero.headingColored")}
+                        </span>
                     </h1>
                     <p className="text-lg leading-relaxed text-muted-foreground max-w-[520px] mb-8">
-                        Stop loading trucks by intuition. Five proven packing
-                        algorithms compete to find the best fit for every
-                        shipment, while delivery routes are optimized end-to-end
-                        — from warehouse to final stop.
+                        {t("hero.description")}
                     </p>
                     <div className="flex gap-3 items-center flex-wrap">
-                        <button className="bg-foreground text-secondary px-6 py-3.5 text-[15px] font-medium hover:bg-black transition">
-                            Get a demo →
-                        </button>
-                        <button className="px-6 py-3.5 text-[15px] font-medium border border-border hover:bg-foreground/5 transition">
-                            See it pack a truck
-                        </button>
+                        <Button className="bg-black px-12 py-6" size={"lg"}>
+                            {t("hero.cta")}
+                        </Button>
                     </div>
 
                     <div className="grid grid-cols-3 gap-8 mt-14 pt-7 border-t border-border max-w-[560px]">
                         <div>
                             <div className="text-[32px] font-medium tracking-[-0.03em] leading-none">
-                                94
+                                {t("hero.stats.utilizationValue")}
                                 <span className="text-base text-muted-foreground ml-0.5 font-normal">
                                     %
                                 </span>
                             </div>
                             <div className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                                Median volume utilization across benchmarked
-                                runs
+                                {t("hero.stats.utilizationDesc")}
                             </div>
                         </div>
                         <div>
                             <div className="text-[32px] font-medium tracking-[-0.03em] leading-none">
-                                5
+                                {t("hero.stats.algorithmsValue")}
                                 <span className="text-base text-muted-foreground ml-0.5 font-normal">
-                                    algos
+                                    {t("hero.stats.algorithmsSuffix")}
                                 </span>
                             </div>
                             <div className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                                Run in parallel on every shipment, side by side
+                                {t("hero.stats.algorithmsDesc")}
                             </div>
                         </div>
                         <div>
                             <div className="text-[32px] font-medium tracking-[-0.03em] leading-none">
-                                LIFO
+                                {t("hero.stats.lifoValue")}
                             </div>
                             <div className="text-xs text-muted-foreground mt-2 leading-relaxed">
-                                Packed in reverse stop order, every time
+                                {t("hero.stats.lifoDesc")}
                             </div>
                         </div>
                     </div>
@@ -237,6 +364,7 @@ function Hero() {
 }
 
 function HeroVisual() {
+    const { t } = useTranslation();
     return (
         <div
             className="relative border border-border overflow-hidden"
@@ -558,8 +686,8 @@ function HeroVisual() {
                     color: "#F2EBDC",
                 }}
             >
-                <div className="text-chart-3 uppercase tracking-[0.1em] text-[10px] mb-1">
-                    Volume utilization
+                <div className="text-chart-3 uppercase tracking-widesttext-[10px] mb-1">
+                    {t("hero.visual.volumeUtilization")}
                 </div>
                 <div className="text-[18px] text-white font-medium tracking-[-0.02em]">
                     94.2%
@@ -569,11 +697,17 @@ function HeroVisual() {
             {/* Overlay 2 — bottom-right, light */}
             <div className="absolute bottom-6 right-6 px-4 py-3.5 text-[11px] bg-white/95 text-foreground border border-border min-w-[200px]">
                 <div className="flex justify-between gap-4 py-0.5">
-                    <span className="text-foreground/55">Items packed</span>
-                    <span className="font-medium">42 / 42</span>
+                    <span className="text-foreground dark:text-background/70">
+                        {t("hero.visual.itemsPacked")}
+                    </span>
+                    <span className="font-medium dark:text-background/70">
+                        42 / 42
+                    </span>
                 </div>
                 <div className="flex justify-between gap-4 py-0.5">
-                    <span className="text-foreground/55">LIFO compliant</span>
+                    <span className="text-foreground dark:text-background/70">
+                        {t("hero.visual.lifoCompliant")}
+                    </span>
                     <span
                         className="font-medium"
                         style={{ color: "oklch(0.62 0.16 152)" }}
@@ -582,7 +716,9 @@ function HeroVisual() {
                     </span>
                 </div>
                 <div className="flex justify-between gap-4 py-0.5">
-                    <span className="text-foreground/55">CG check</span>
+                    <span className="text-foreground  dark:text-background/70">
+                        {t("hero.visual.cgCheck")}
+                    </span>
                     <span
                         className="font-medium"
                         style={{ color: "oklch(0.62 0.16 152)" }}
@@ -591,8 +727,12 @@ function HeroVisual() {
                     </span>
                 </div>
                 <div className="flex justify-between gap-4 py-0.5">
-                    <span className="text-foreground/55">Algorithm</span>
-                    <span className="font-medium">GRASP</span>
+                    <span className="text-foreground dark:text-background/70">
+                        {t("hero.visual.algorithm")}
+                    </span>
+                    <span className="font-medium dark:text-background/70">
+                        GRASP/VND
+                    </span>
                 </div>
             </div>
 
@@ -601,7 +741,7 @@ function HeroVisual() {
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                     <circle cx="5" cy="5" r="2.5" fill="white" />
                 </svg>
-                Route 4 stops
+                {t("hero.visual.routePill")}
             </div>
         </div>
     );
@@ -611,12 +751,12 @@ function HeroVisual() {
 // LOGOS
 // ============================================================
 function Logos() {
+    const { t } = useTranslation();
     return (
         <div className="bg-secondary">
-            <div className="max-w-[1280px] mx-auto px-8 py-10 pb-16 border-b border-border">
+            <div className="max-w-7xl mx-auto px-8 py-10 pb-16 border-b border-border">
                 <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground text-center mb-6">
-                    Trusted by fleet operators across logistics, e-commerce, and
-                    freight
+                    {t("logos.tagline")}
                 </div>
                 <div className="grid grid-cols-5 gap-8 items-center opacity-70">
                     {[
@@ -643,49 +783,16 @@ function Logos() {
 // ALGORITHMS (dark band)
 // ============================================================
 function Algorithms() {
-    const algos = [
-        {
-            id: "ALGO_01",
-            name: "Naive Greedy",
-            desc: "Fast baseline. Drops items into the first available position by descending volume — useful as a sanity check.",
-            vol: "81.4%",
-            w: 81,
-            time: "0.04s",
-        },
-        {
-            id: "ALGO_02",
-            name: "Bottom-Left-Fill",
-            desc: "Classic 2D heuristic extended to 3D. Pushes every item to the bottom-left corner before settling.",
-            vol: "87.1%",
-            w: 87,
-            time: "0.18s",
-        },
-        {
-            id: "ALGO_03",
-            name: "Extreme Point",
-            desc: "Tracks corner candidates after each placement. Better for irregular cargo mixes and tight tolerances.",
-            vol: "90.6%",
-            w: 91,
-            time: "0.42s",
-        },
-        {
-            id: "ALGO_04",
-            name: "H1 Layer-Shelf",
-            desc: "Builds horizontal layers, then shelves within layers. Strong for uniform pallet-style cargo.",
-            vol: "88.9%",
-            w: 89,
-            time: "0.21s",
-        },
-        {
-            id: "ALGO_05",
-            name: "GRASP Metaheuristic",
-            desc: "Greedy randomized adaptive search. Iterates and refines — the highest packing density on most real fleets.",
-            vol: "94.2%",
-            w: 94,
-            time: "2.81s",
-            winner: true,
-        },
-    ];
+    const { t } = useTranslation();
+    const algos = t("algorithms_landing.items", { returnObjects: true }) as {
+        id: string;
+        name: string;
+        desc: string;
+        vol: string;
+        w: number;
+        time: string;
+        winner?: boolean;
+    }[];
 
     return (
         <section
@@ -693,29 +800,30 @@ function Algorithms() {
             className="py-[120px]"
             style={{ background: HERO_DARK, color: "#F2EBDC" }}
         >
-            <div className="max-w-[1280px] mx-auto px-8">
+            <div className="max-w-7xl mx-auto px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end mb-14">
                     <div>
                         <Eyebrow
                             num="01"
-                            label="FIVE ALGORITHMS, ONE WINNER"
+                            label={t("algorithms_landing.eyebrow")}
                             light
                         />
                         <h2
                             className="font-medium tracking-[-0.03em] leading-none mt-4 mb-5"
                             style={{ fontSize: "clamp(40px, 4.5vw, 64px)" }}
                         >
-                            Pack smarter,
+                            {t("algorithms_landing.heading1")}
                             <br />
-                            <ItalSerif>not</ItalSerif>{" "}
-                            <span className="text-chart-3">harder.</span>
+                            <ItalSerif>
+                                {t("algorithms_landing.headingItalic")}
+                            </ItalSerif>{" "}
+                            <span className="text-chart-3">
+                                {t("algorithms_landing.headingColored")}
+                            </span>
                         </h2>
                     </div>
                     <p className="text-lg leading-relaxed text-white/70 max-w-[620px]">
-                        Upload your cargo list, pick a truck, and watch five
-                        different packing algorithms work in parallel. Each one
-                        returns a complete 3D placement — and you choose the
-                        result that fits your priorities.
+                        {t("algorithms_landing.description")}
                     </p>
                 </div>
 
@@ -723,21 +831,20 @@ function Algorithms() {
                     {algos.map((a) => (
                         <div
                             key={a.id}
-                            className="p-5.5 min-h-[320px] flex flex-col relative overflow-hidden transition-all hover:-translate-y-0.5"
+                            className="flex flex-col relative overflow-hidden transition-all hover:-translate-y-0.5"
                             style={{
-                                background: a.winner
-                                    ? `linear-gradient(180deg, ${CARD_DARK} 0%, ${CARD_DARK} 60%)`
-                                    : CARD_DARK,
+                                background: CARD_DARK,
                                 border: `1px solid ${a.winner ? "rgba(232,93,44,0.5)" : LINE_DARK}`,
                                 padding: "22px",
+                                minHeight: "320px",
                             }}
                         >
                             {a.winner && (
                                 <span
-                                    className="absolute top-5.5 right-5.5 bg-chart-3 text-white text-[9px] px-1.5 py-1 tracking-[0.12em]"
+                                    className="absolute bg-chart-3 text-white text-[9px] px-1.5 py-1 tracking-[0.12em]"
                                     style={{ top: "22px", right: "22px" }}
                                 >
-                                    WINNER
+                                    {t("algorithms_landing.winner")}
                                 </span>
                             )}
                             <div className="text-[11px] text-white/40 mb-6">
@@ -756,7 +863,9 @@ function Algorithms() {
                                 style={{ borderColor: LINE_DARK }}
                             >
                                 <div className="flex justify-between text-[11px] mb-2">
-                                    <span className="text-white/50">VOL</span>
+                                    <span className="text-white/50">
+                                        {t("algorithms_landing.volLabel")}
+                                    </span>
                                     <span>{a.vol}</span>
                                 </div>
                                 <div className="h-1 bg-white/8 overflow-hidden">
@@ -771,7 +880,9 @@ function Algorithms() {
                                     />
                                 </div>
                                 <div className="flex justify-between text-[11px] mt-2.5">
-                                    <span className="text-white/50">TIME</span>
+                                    <span className="text-white/50">
+                                        {t("algorithms_landing.timeLabel")}
+                                    </span>
                                     <span>{a.time}</span>
                                 </div>
                             </div>
@@ -780,8 +891,7 @@ function Algorithms() {
                 </div>
 
                 <p className="text-xs text-white/45 mt-8 tracking-[0.02em]">
-                    // Benchmarks from a 500-item production fleet, mixed cargo
-                    profile. Your results will vary by item mix and truck class.
+                    {t("algorithms_landing.benchmark")}
                 </p>
             </div>
         </section>
@@ -792,38 +902,37 @@ function Algorithms() {
 // 3D LOADING (dark band)
 // ============================================================
 function Loading3D() {
+    const { t } = useTranslation();
+    const features = t("loading3d.features", {
+        returnObjects: true,
+    }) as string[];
     return (
         <section
             id="loading"
             className="pb-[120px]"
             style={{ background: HERO_DARK, color: "#F2EBDC" }}
         >
-            <div className="max-w-[1280px] mx-auto px-8">
+            <div className="max-w-7xl mx-auto px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-16 items-center">
                     <div>
-                        <Eyebrow num="02" label="3D VISUALIZATION" light />
+                        <Eyebrow
+                            num="02"
+                            label={t("loading3d.eyebrow")}
+                            light
+                        />
                         <h3
                             className="font-medium leading-[1.05] tracking-[-0.03em] mt-3.5 mb-4.5"
                             style={{ fontSize: "clamp(32px, 3.5vw, 48px)" }}
                         >
-                            Every box, exactly
+                            {t("loading3d.heading1")}
                             <br />
-                            where it sits.
+                            {t("loading3d.heading2")}
                         </h3>
                         <p className="text-[17px] leading-relaxed text-white/70 mb-6">
-                            Every packing result renders as an interactive 3D
-                            scene inside the truck. Rotate, zoom, and inspect
-                            each item where it goes. FRONT and REAR labels make
-                            orientation obvious — and the truck wireframe stays
-                            out of your way.
+                            {t("loading3d.description")}
                         </p>
                         <ul className="flex flex-col gap-3 list-none p-0 m-0">
-                            {[
-                                "Per-item position, orientation, and packing sequence",
-                                "This-side-up flags rendered on every box face",
-                                "Driver-ready read-only view for handoff",
-                                "Center-of-gravity overlay & support-ratio check",
-                            ].map((line) => (
+                            {features.map((line) => (
                                 <li
                                     key={line}
                                     className="flex gap-3 items-start text-[15px] leading-relaxed"
@@ -845,9 +954,9 @@ function Loading3D() {
                     >
                         <div className="flex justify-between items-center text-[11px] text-white/50 mb-4">
                             <span className="text-chart-3">
-                                // truck_view.3d
+                                {t("loading3d.overlay.filename")}
                             </span>
-                            <span>SH-2814 · 42 items · GRASP</span>
+                            <span>{t("loading3d.overlay.meta")}</span>
                         </div>
                         <div
                             className="relative w-full overflow-hidden border"
@@ -872,12 +981,12 @@ function Loading3D() {
                                 }}
                             >
                                 <div className="text-chart-1 mb-0.5">
-                                    ITEM #018
+                                    {t("loading3d.overlay.itemLabel")}
                                 </div>
-                                <div>60×42×30 · stop 3 · 12.4 kg</div>
+                                <div>{t("loading3d.overlay.itemMeta")}</div>
                             </div>
-                            <div className="absolute top-4 right-4 px-2.5 py-1.5 text-[10px] text-white tracking-[0.1em] bg-chart-3">
-                                42 / 42 PACKED
+                            <div className="absolute top-4 right-4 px-2.5 py-1.5 text-[10px] text-white tracking-widest bg-chart-3">
+                                {t("loading3d.overlay.packed")}
                             </div>
                         </div>
                     </div>
@@ -891,13 +1000,29 @@ function Loading3D() {
 // ROUTING (dark band)
 // ============================================================
 function Routing() {
+    const { t } = useTranslation();
+    const features = t("routing.features", { returnObjects: true }) as string[];
+    const stats = t("routing.stats", { returnObjects: true }) as {
+        key: string;
+        value: string;
+    }[];
+    const stops = t("routing.map.stops", { returnObjects: true }) as {
+        label: string;
+        time: string;
+    }[];
+
+    const stopCoords = [
+        [190, 200],
+        [330, 240],
+        [420, 120],
+    ];
     return (
         <section
             id="routing"
             className="pb-[120px]"
             style={{ background: HERO_DARK, color: "#F2EBDC" }}
         >
-            <div className="max-w-[1280px] mx-auto px-8">
+            <div className="max-w-7xl mx-auto px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-16 items-center">
                     <div
                         className="p-6 relative overflow-hidden lg:order-1 order-2"
@@ -909,9 +1034,9 @@ function Routing() {
                     >
                         <div className="absolute top-6 left-6 flex gap-2 flex-wrap z-10">
                             {[
-                                ["JOB", "DJ-441"],
-                                ["STOPS", "4"],
-                                ["DISTANCE", "187 km"],
+                                [t("routing.map.jobKey"), "DJ-441"],
+                                [t("routing.map.stopsKey"), "4"],
+                                [t("routing.map.distanceKey"), "187 km"],
                             ].map(([k, v]) => (
                                 <div
                                     key={k}
@@ -1044,49 +1169,51 @@ function Routing() {
                                     fontSize="9"
                                     fill="rgba(255,255,255,0.7)"
                                 >
-                                    WAREHOUSE
+                                    {t("routing.map.warehouse")}
                                 </text>
                             </g>
-                            {[
-                                [190, 200, "1", "Stop 01", "09:40 · 12 items"],
-                                [330, 240, "2", "Stop 02", "10:55 · 8 items"],
-                                [420, 120, "3", "Stop 03", "12:20 · 22 items"],
-                            ].map(([x, y, n, label, time], i) => (
-                                <g key={i} transform={`translate(${x}, ${y})`}>
-                                    <circle r="14" fill="#E85D2C" />
-                                    <text
-                                        y="4"
-                                        textAnchor="middle"
-                                        fontSize="11"
-                                        fontWeight="600"
-                                        fill="white"
+                            {stops.map((stop, i) => {
+                                const [x, y] = stopCoords[i];
+                                return (
+                                    <g
+                                        key={i}
+                                        transform={`translate(${x}, ${y})`}
                                     >
-                                        {n}
-                                    </text>
-                                    <text
-                                        x={Number(x) > 350 ? -50 : 20}
-                                        y="0"
-                                        textAnchor={
-                                            Number(x) > 350 ? "end" : "start"
-                                        }
-                                        fontSize="9"
-                                        fill="white"
-                                    >
-                                        {label}
-                                    </text>
-                                    <text
-                                        x={Number(x) > 350 ? -50 : 20}
-                                        y="12"
-                                        textAnchor={
-                                            Number(x) > 350 ? "end" : "start"
-                                        }
-                                        fontSize="9"
-                                        fill="rgba(255,255,255,0.6)"
-                                    >
-                                        {time}
-                                    </text>
-                                </g>
-                            ))}
+                                        <circle r="14" fill="#E85D2C" />
+                                        <text
+                                            y="4"
+                                            textAnchor="middle"
+                                            fontSize="11"
+                                            fontWeight="600"
+                                            fill="white"
+                                        >
+                                            {i + 1}
+                                        </text>
+                                        <text
+                                            x={x > 350 ? -50 : 20}
+                                            y="0"
+                                            textAnchor={
+                                                x > 350 ? "end" : "start"
+                                            }
+                                            fontSize="9"
+                                            fill="white"
+                                        >
+                                            {stop.label}
+                                        </text>
+                                        <text
+                                            x={x > 350 ? -50 : 20}
+                                            y="12"
+                                            textAnchor={
+                                                x > 350 ? "end" : "start"
+                                            }
+                                            fontSize="9"
+                                            fill="rgba(255,255,255,0.6)"
+                                        >
+                                            {stop.time}
+                                        </text>
+                                    </g>
+                                );
+                            })}
                             <circle cx="0" cy="0" r="6" fill="#F4C430">
                                 <animateMotion
                                     dur="6s"
@@ -1103,18 +1230,13 @@ function Routing() {
                                 border: `1px solid ${LINE_DARK}`,
                             }}
                         >
-                            {[
-                                ["ETA total", "3h 24m"],
-                                ["Distance", "187 km"],
-                                ["Items", "42"],
-                                ["Pack order", "3 → 2 → 1"],
-                            ].map(([k, v]) => (
-                                <div key={k}>
-                                    <div className="text-[9px] text-white/50 uppercase tracking-[0.1em] mb-1">
-                                        {k}
+                            {stats.map(({ key, value }) => (
+                                <div key={key}>
+                                    <div className="text-[9px] text-white/50 uppercase tracking-widest mb-1">
+                                        {key}
                                     </div>
                                     <div className="text-[15px] font-medium tracking-[-0.02em]">
-                                        {v}
+                                        {value}
                                     </div>
                                 </div>
                             ))}
@@ -1122,28 +1244,20 @@ function Routing() {
                     </div>
 
                     <div className="lg:order-2 order-1">
-                        <Eyebrow num="03" label="MULTI-STOP ROUTING" light />
+                        <Eyebrow num="03" label={t("routing.eyebrow")} light />
                         <h3
                             className="font-medium leading-[1.05] tracking-[-0.03em] mt-3.5 mb-4.5"
                             style={{ fontSize: "clamp(32px, 3.5vw, 48px)" }}
                         >
-                            Routes first.
+                            {t("routing.heading1")}
                             <br />
-                            Then the cargo.
+                            {t("routing.heading2")}
                         </h3>
                         <p className="text-[17px] leading-relaxed text-white/70 mb-6">
-                            Group shipments into delivery jobs and let the
-                            routing engine work out the stop order before
-                            packing begins. Cargo is then loaded in reverse —
-                            last in, first out by stop — so drivers don't have
-                            to dig through the truck at every drop.
+                            {t("routing.description")}
                         </p>
                         <ul className="flex flex-col gap-3 list-none p-0 m-0">
-                            {[
-                                "Stop sequencing optimized for distance & time windows",
-                                "Cargo packed in last-in, first-out unloading order",
-                                "Route distance, ETA, and execution time on every job",
-                            ].map((line) => (
+                            {features.map((line) => (
                                 <li
                                     key={line}
                                     className="flex gap-3 items-start text-[15px] leading-relaxed"
@@ -1164,112 +1278,94 @@ function Routing() {
 // VALIDATORS (cream band)
 // ============================================================
 function Validators() {
-    const cards = [
-        {
-            title: "LIFO ordering",
-            tag: "validateLifo",
-            desc: "Checks that no later-delivery item blocks an earlier-delivery item — neither horizontally (closer to the door) nor vertically (stacked on top).",
-            reports: ["lifo_ok", "lifo_violations"],
-            icon: (
-                <path
-                    d="M3 6h14M3 10h14M3 14h14M14 4l3 2-3 2M14 12l3 2-3 2"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                />
-            ),
-        },
-        {
-            title: "Support ratio",
-            tag: "validateSupport",
-            desc: "Every non-floor item must have at least 70% of its bottom face supported by either the truck floor or items below it.",
-            reports: ["support_ok", "avg_support_ratio"],
-            icon: (
-                <>
-                    <rect
-                        x="4"
-                        y="11"
-                        width="12"
-                        height="5"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                    />
-                    <rect
-                        x="6"
-                        y="5"
-                        width="8"
-                        height="5"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                    />
-                    <path
-                        d="M3 18h14"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                    />
-                </>
-            ),
-        },
-        {
-            title: "Fragility",
-            tag: "validateFragility",
-            desc: "Items flagged HIGH fragility have nothing on top. Stack-weight limits and is_stackable=false rules are enforced.",
-            reports: ["fragility_ok", "fragility_violations"],
-            icon: (
-                <path
-                    d="M7 3l-2 5 5 9 5-9-2-5H7zM7 3l3 5M13 3l-3 5M5 8h10"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                />
-            ),
-            accent: true,
-        },
-        {
-            title: "Center of gravity",
-            tag: "validateCog",
-            desc: "Computes the cargo's CG along the truck depth axis, normalized 0=cab to 1=door. Must fall within the truck's tolerance band.",
-            reports: ["cog_ok", "cog_ratio"],
-            icon: (
-                <>
-                    <circle
-                        cx="10"
-                        cy="10"
-                        r="7"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                    />
-                    <circle cx="10" cy="10" r="2" fill="currentColor" />
-                    <path
-                        d="M10 3v3M10 14v3M3 10h3M14 10h3"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                    />
-                </>
-            ),
-        },
+    const { t } = useTranslation();
+    // Icons are pure SVG paths — they don't contain text so they stay inline
+    const icons = [
+        <path
+            key="lifo"
+            d="M3 6h14M3 10h14M3 14h14M14 4l3 2-3 2M14 12l3 2-3 2"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />,
+        <>
+            <rect
+                key="s1"
+                x="4"
+                y="11"
+                width="12"
+                height="5"
+                stroke="currentColor"
+                strokeWidth="1.6"
+            />
+            <rect
+                key="s2"
+                x="6"
+                y="5"
+                width="8"
+                height="5"
+                stroke="currentColor"
+                strokeWidth="1.6"
+            />
+            <path
+                key="s3"
+                d="M3 18h14"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+            />
+        </>,
+        <path
+            key="frag"
+            d="M7 3l-2 5 5 9 5-9-2-5H7zM7 3l3 5M13 3l-3 5M5 8h10"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinejoin="round"
+        />,
+        <>
+            <circle
+                key="c1"
+                cx="10"
+                cy="10"
+                r="7"
+                stroke="currentColor"
+                strokeWidth="1.6"
+            />
+            <circle key="c2" cx="10" cy="10" r="2" fill="currentColor" />
+            <path
+                key="c3"
+                d="M10 3v3M10 14v3M3 10h3M14 10h3"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+            />
+        </>,
     ];
+
+    const cards = (
+        t("validators.items", { returnObjects: true }) as {
+            title: string;
+            tag: string;
+            desc: string;
+            reports: string[];
+            accent?: boolean;
+        }[]
+    ).map((card, i) => ({ ...card, icon: icons[i] }));
 
     return (
         <section className="bg-secondary py-[120px]">
-            <div className="max-w-[1280px] mx-auto px-8">
-                <Eyebrow
-                    num="04"
-                    label="VALIDATORS · CHECKED AFTER PLACEMENT"
-                />
+            <div className="max-w-7xl mx-auto px-8">
+                <Eyebrow num="04" label={t("validators.eyebrow")} />
                 <h2
                     className="font-medium tracking-[-0.03em] leading-none mt-4 mb-5"
                     style={{ fontSize: "clamp(40px, 4.5vw, 64px)" }}
                 >
-                    Every load gets <ItalSerif>graded.</ItalSerif>
+                    {t("validators.heading1")}{" "}
+                    <ItalSerif>{t("validators.headingItalic")}</ItalSerif>
                 </h2>
                 <p className="text-lg leading-relaxed text-muted-foreground max-w-[700px]">
-                    Once the algorithm finishes packing, four validators measure
-                    the result and report compliance. The packers don't try to
-                    satisfy these — the validators tell you whether they did.
+                    {t("validators.description")}
                 </p>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-14">
@@ -1295,7 +1391,7 @@ function Validators() {
                                     </svg>
                                 </div>
                                 <span
-                                    className={`text-[10px] px-2 py-1 tracking-[0.1em] ${c.accent ? "text-chart-1 bg-chart-1/12" : "text-chart-3 bg-chart-3/10"}`}
+                                    className={`text-[10px] px-2 py-1 tracking-widest ${c.accent ? "text-chart-1 bg-chart-1/12" : "text-chart-3 bg-chart-3/10"}`}
                                 >
                                     {c.tag}
                                 </span>
@@ -1304,18 +1400,18 @@ function Validators() {
                                 {c.title}
                             </h4>
                             <p
-                                className={`text-sm leading-relaxed m-0 ${c.accent ? "text-white/70" : "text-muted-foreground"}`}
+                                className={`text-sm leading-relaxed m-0 ${c.accent ? "text-white/70 dark:text-background" : "text-muted-foreground"}`}
                             >
                                 {c.desc}
                             </p>
                             <div
-                                className={`flex gap-4 mt-3 pt-3.5 border-t ${c.accent ? "border-white/12" : "border-border"}`}
+                                className={`flex gap-4 mt-3 pt-3.5 border-t ${c.accent ? "border-white/12 dark:border-background/30" : "border-border"}`}
                             >
                                 {c.reports.map((r, i) => (
                                     <div key={r}>
                                         {i === 0 && (
                                             <span
-                                                className={`text-[10px] block ${c.accent ? "text-white/50" : "text-muted-foreground"}`}
+                                                className={`text-[10px] block ${c.accent ? "text-white/50 dark:text-background" : "text-muted-foreground"}`}
                                             >
                                                 REPORTS
                                             </span>
@@ -1347,9 +1443,7 @@ function Validators() {
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-8">
-                    // Validators run on every result from every algorithm.
-                    Compliance flags surface in the comparison view, so you can
-                    see who passed before you commit a load.
+                    {t("validators.footerNote")}
                 </p>
             </div>
         </section>
@@ -1360,167 +1454,139 @@ function Validators() {
 // HOW IT WORKS (dark band)
 // ============================================================
 function HowItWorks() {
-    const steps = [
-        {
-            n: "STEP 01",
-            h: "Set up your fleet",
-            p: "Add trucks with dimensions, weight limits, door side, and CG tolerances. One-time setup per vehicle.",
-            vis: (
-                <>
-                    <rect
-                        x="20"
-                        y="20"
-                        width="50"
-                        height="25"
-                        rx="0"
-                        fill="none"
-                        stroke="#E85D2C"
-                        strokeWidth="1.5"
-                    />
-                    <rect
-                        x="65"
-                        y="28"
-                        width="14"
-                        height="17"
-                        rx="0"
-                        fill="none"
-                        stroke="#E85D2C"
-                        strokeWidth="1.5"
-                    />
-                    <circle cx="30" cy="48" r="3" fill="#E85D2C" />
-                    <circle cx="60" cy="48" r="3" fill="#E85D2C" />
-                    <circle cx="73" cy="48" r="3" fill="#E85D2C" />
-                </>
-            ),
-        },
-        {
-            n: "STEP 02",
-            h: "Create shipments",
-            p: "Drop in a cargo Excel, pick a truck, set drop points and times. Live summary as you go.",
-            vis: (
-                <>
-                    <rect
-                        x="20"
-                        y="10"
-                        width="40"
-                        height="40"
-                        fill="rgba(76,175,106,0.1)"
-                        stroke="#4CAF6A"
-                        strokeWidth="1.5"
-                    />
-                    <line x1="26" y1="20" x2="54" y2="20" stroke="#4CAF6A" />
-                    <line
-                        x1="26"
-                        y1="28"
-                        x2="54"
-                        y2="28"
-                        stroke="rgba(76,175,106,0.5)"
-                    />
-                    <line
-                        x1="26"
-                        y1="36"
-                        x2="44"
-                        y2="36"
-                        stroke="rgba(76,175,106,0.5)"
-                    />
-                    <line
-                        x1="26"
-                        y1="44"
-                        x2="48"
-                        y2="44"
-                        stroke="rgba(76,175,106,0.5)"
-                    />
-                    <text x="60" y="34" fontSize="14" fill="#4CAF6A">
-                        →
-                    </text>
-                </>
-            ),
-        },
-        {
-            n: "STEP 03",
-            h: "Build a delivery job",
-            p: "Group shipments going out together, assign trucks. Routing runs first, sequencing the stops.",
-            vis: (
-                <>
-                    <path
-                        d="M10 45 Q35 20 60 35 T90 20"
-                        fill="none"
-                        stroke="#E85D2C"
-                        strokeWidth="1.5"
-                        strokeDasharray="3 2"
-                    />
-                    <circle cx="10" cy="45" r="3" fill="#3B5BFF" />
-                    <circle cx="35" cy="32" r="3" fill="#E85D2C" />
-                    <circle cx="60" cy="35" r="3" fill="#E85D2C" />
-                    <circle cx="90" cy="20" r="3" fill="#E85D2C" />
-                </>
-            ),
-        },
-        {
-            n: "STEP 04",
-            h: "Compare and choose",
-            p: "All five algorithms run in parallel. Inspect the 3D results, check the metrics, pick the winner.",
-            vis: (
-                <>
-                    <rect
-                        x="10"
-                        y="40"
-                        width="12"
-                        height="15"
-                        fill="rgba(255,255,255,0.2)"
-                    />
-                    <rect
-                        x="26"
-                        y="32"
-                        width="12"
-                        height="23"
-                        fill="rgba(255,255,255,0.3)"
-                    />
-                    <rect
-                        x="42"
-                        y="20"
-                        width="12"
-                        height="35"
-                        fill="rgba(255,255,255,0.4)"
-                    />
-                    <rect
-                        x="58"
-                        y="28"
-                        width="12"
-                        height="27"
-                        fill="rgba(255,255,255,0.3)"
-                    />
-                    <rect x="74" y="10" width="12" height="45" fill="#E85D2C" />
-                </>
-            ),
-        },
-        {
-            n: "STEP 05",
-            h: "Hand off to the driver",
-            p: "Assign a driver. They acknowledge and get a read-only loading plan on their device.",
-            vis: (
-                <>
-                    <rect
-                        x="35"
-                        y="8"
-                        width="30"
-                        height="48"
-                        fill="rgba(255,255,255,0.05)"
-                        stroke="#3B5BFF"
-                        strokeWidth="1.5"
-                    />
-                    <rect
-                        x="40"
-                        y="14"
-                        width="20"
-                        height="28"
-                        fill="rgba(59,91,255,0.2)"
-                    />
-                    <circle cx="50" cy="49" r="2" fill="#3B5BFF" />
-                    <circle cx="50" cy="28" r="3" fill="#4CAF6A" />
-                </>
-            ),
-        },
+    const { t } = useTranslation();
+    const steps = t("howItWorks.steps", { returnObjects: true }) as {
+        n: string;
+        h: string;
+        p: string;
+    }[];
+
+    const visuals = [
+        <>
+            <rect
+                x="20"
+                y="20"
+                width="50"
+                height="25"
+                rx="0"
+                fill="none"
+                stroke="#E85D2C"
+                strokeWidth="1.5"
+            />
+            <rect
+                x="65"
+                y="28"
+                width="14"
+                height="17"
+                rx="0"
+                fill="none"
+                stroke="#E85D2C"
+                strokeWidth="1.5"
+            />
+            <circle cx="30" cy="48" r="3" fill="#E85D2C" />
+            <circle cx="60" cy="48" r="3" fill="#E85D2C" />
+            <circle cx="73" cy="48" r="3" fill="#E85D2C" />
+        </>,
+        <>
+            <rect
+                x="20"
+                y="10"
+                width="40"
+                height="40"
+                fill="rgba(76,175,106,0.1)"
+                stroke="#4CAF6A"
+                strokeWidth="1.5"
+            />
+            <line x1="26" y1="20" x2="54" y2="20" stroke="#4CAF6A" />
+            <line
+                x1="26"
+                y1="28"
+                x2="54"
+                y2="28"
+                stroke="rgba(76,175,106,0.5)"
+            />
+            <line
+                x1="26"
+                y1="36"
+                x2="44"
+                y2="36"
+                stroke="rgba(76,175,106,0.5)"
+            />
+            <line
+                x1="26"
+                y1="44"
+                x2="48"
+                y2="44"
+                stroke="rgba(76,175,106,0.5)"
+            />
+            <text x="60" y="34" fontSize="14" fill="#4CAF6A">
+                →
+            </text>
+        </>,
+        <>
+            <path
+                d="M10 45 Q35 20 60 35 T90 20"
+                fill="none"
+                stroke="#E85D2C"
+                strokeWidth="1.5"
+                strokeDasharray="3 2"
+            />
+            <circle cx="10" cy="45" r="3" fill="#3B5BFF" />
+            <circle cx="35" cy="32" r="3" fill="#E85D2C" />
+            <circle cx="60" cy="35" r="3" fill="#E85D2C" />
+            <circle cx="90" cy="20" r="3" fill="#E85D2C" />
+        </>,
+        <>
+            <rect
+                x="10"
+                y="40"
+                width="12"
+                height="15"
+                fill="rgba(255,255,255,0.2)"
+            />
+            <rect
+                x="26"
+                y="32"
+                width="12"
+                height="23"
+                fill="rgba(255,255,255,0.3)"
+            />
+            <rect
+                x="42"
+                y="20"
+                width="12"
+                height="35"
+                fill="rgba(255,255,255,0.4)"
+            />
+            <rect
+                x="58"
+                y="28"
+                width="12"
+                height="27"
+                fill="rgba(255,255,255,0.3)"
+            />
+            <rect x="74" y="10" width="12" height="45" fill="#E85D2C" />
+        </>,
+        <>
+            <rect
+                x="35"
+                y="8"
+                width="30"
+                height="48"
+                fill="rgba(255,255,255,0.05)"
+                stroke="#3B5BFF"
+                strokeWidth="1.5"
+            />
+            <rect
+                x="40"
+                y="14"
+                width="20"
+                height="28"
+                fill="rgba(59,91,255,0.2)"
+            />
+            <circle cx="50" cy="49" r="2" fill="#3B5BFF" />
+            <circle cx="50" cy="28" r="3" fill="#4CAF6A" />
+        </>,
     ];
 
     return (
@@ -1529,25 +1595,26 @@ function HowItWorks() {
             className="py-[120px]"
             style={{ background: HERO_DARK, color: "#F2EBDC" }}
         >
-            <div className="max-w-[1280px] mx-auto px-8">
+            <div className="max-w-7xl mx-auto px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-end">
                     <div>
                         <Eyebrow
                             num="05"
-                            label="FIVE STEPS, FROM EXCEL TO DRIVER"
+                            label={t("howItWorks.eyebrow")}
                             light
                         />
                         <h2
                             className="font-medium tracking-[-0.03em] leading-none mt-4"
                             style={{ fontSize: "clamp(40px, 4.5vw, 64px)" }}
                         >
-                            How it <ItalSerif>works.</ItalSerif>
+                            {t("howItWorks.heading1")}{" "}
+                            <ItalSerif>
+                                {t("howItWorks.headingItalic")}
+                            </ItalSerif>
                         </h2>
                     </div>
                     <p className="text-lg leading-relaxed text-white/70 max-w-[620px]">
-                        From spreadsheet to driver handoff — the same workflow
-                        your team already follows, just measured and optimized
-                        at every step.
+                        {t("howItWorks.description")}
                     </p>
                 </div>
 
@@ -1577,7 +1644,7 @@ function HowItWorks() {
                                     preserveAspectRatio="xMidYMid meet"
                                     className="w-full h-full"
                                 >
-                                    {s.vis}
+                                    {visuals[i]}
                                 </svg>
                             </div>
                         </div>
@@ -1592,49 +1659,32 @@ function HowItWorks() {
 // METRICS BAND (cream)
 // ============================================================
 function Metrics() {
+    const { t } = useTranslation();
+    const items = t("metrics.items", { returnObjects: true }) as {
+        label: string;
+        num: string;
+        small: string;
+        desc: string;
+    }[];
     return (
         <section className="bg-muted border-y border-border py-20">
-            <div className="max-w-[1280px] mx-auto px-8">
+            <div className="max-w-7xl mx-auto px-8">
                 <div className="mb-14">
-                    <Eyebrow num="06" label="DECISIONS YOU CAN DEFEND" />
+                    <Eyebrow num="06" label={t("metrics.eyebrow")} />
                     <h2
                         className="font-medium tracking-[-0.03em] leading-none mt-4"
                         style={{ fontSize: "clamp(40px, 4.5vw, 64px)" }}
                     >
-                        Every choice, <ItalSerif>on screen.</ItalSerif>
+                        {t("metrics.heading1")}{" "}
+                        <ItalSerif>{t("metrics.headingItalic")}</ItalSerif>
                     </h2>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[
-                        {
-                            lbl: "Volume utilization",
-                            num: "94",
-                            small: ".2%",
-                            desc: "Median across the GRASP algorithm on production fleets.",
-                        },
-                        {
-                            lbl: "Items per shipment",
-                            num: "42",
-                            small: " avg",
-                            desc: "From small parcel runs to full pallet loads.",
-                        },
-                        {
-                            lbl: "Avg pack time",
-                            num: "2.8",
-                            small: "s",
-                            desc: "Five algorithms, in parallel, per shipment.",
-                        },
-                        {
-                            lbl: "Fragility violations",
-                            num: "0",
-                            small: "",
-                            desc: "Caught at planning, never at delivery.",
-                        },
-                    ].map((m) => (
-                        <div key={m.lbl}>
+                    {items.map((m) => (
+                        <div key={m.label}>
                             <div className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground mb-3">
-                                {m.lbl}
+                                {m.label}
                             </div>
                             <div className="text-[56px] leading-none font-medium tracking-[-0.04em]">
                                 {m.num}
@@ -1654,19 +1704,16 @@ function Metrics() {
                     style={{ background: HERO_DARK, color: "#F2EBDC" }}
                 >
                     <div className="text-[11px] text-chart-3 uppercase tracking-[0.12em]">
-                        // Built on
+                        {t("metrics.builtOnLabel")}
                     </div>
                     <div className="text-[15px] leading-relaxed">
-                        Peer-reviewed operations research —
-                        Martello-Pisinger-Vigo, de Castro Silva, Crainic, and
-                        others. Implemented and benchmarked against standard
-                        datasets. Not a black box.
+                        {t("metrics.builtOnText")}
                     </div>
                     <a
                         href="#"
                         className="text-sm text-chart-3 whitespace-nowrap hover:underline"
                     >
-                        Read the paper trail →
+                        {t("metrics.builtOnLink")}
                     </a>
                 </div>
             </div>
@@ -1678,6 +1725,7 @@ function Metrics() {
 // CTA
 // ============================================================
 function CTA() {
+    const { t } = useTranslation();
     return (
         <section
             className="relative overflow-hidden pt-24 pb-20"
@@ -1697,33 +1745,33 @@ function CTA() {
             />
             <div className="relative z-10 max-w-[760px] mx-auto px-8 text-center">
                 <span className="inline-flex items-center gap-2 text-[11px] tracking-[0.14em] uppercase text-chart-1">
-                    <span className="text-chart-1">07</span>
-                    <span>— READY WHEN YOU ARE</span>
+                    <span className="text-chart-1">{t("cta.eyebrowNum")}</span>
+                    <span>— {t("cta.eyebrow")}</span>
                 </span>
                 <h2
                     className="font-medium leading-none tracking-[-0.035em] mt-4 mb-6"
                     style={{ fontSize: "clamp(48px, 5.5vw, 76px)" }}
                 >
-                    Stop shipping
+                    {t("cta.heading1")}
                     <br />
-                    <ItalSerif>empty</ItalSerif>{" "}
-                    <span className="text-chart-1">air.</span>
+                    <ItalSerif>{t("cta.headingItalic")}</ItalSerif>{" "}
+                    <span className="text-chart-1">
+                        {t("cta.headingColored")}
+                    </span>
                 </h2>
                 <p className="text-[17px] text-white/70 mx-auto mb-9 max-w-[540px] leading-relaxed">
-                    Get a 30-minute walkthrough on your own cargo data. We'll
-                    run all five algorithms on a real shipment and compare the
-                    results live.
+                    {t("cta.description")}
                 </p>
                 <div className="flex gap-3 justify-center flex-wrap">
                     <button className="bg-primary text-primary-foreground px-6 py-3.5 text-[15px] font-medium hover:brightness-110 transition">
-                        Get a demo →
+                        {t("cta.primaryButton")}
                     </button>
                     <button className="px-6 py-3.5 text-[15px] font-medium text-white border border-white/20 hover:bg-white/5 transition">
-                        Talk to the team
+                        {t("cta.secondaryButton")}
                     </button>
                 </div>
                 <div className="mt-7 text-[11px] text-white/40 tracking-[0.08em]">
-                    // NO SETUP CALL · DEMO IN 24H · CANCEL ANY TIME
+                    {t("cta.disclaimer")}
                 </div>
             </div>
         </section>
@@ -1734,42 +1782,18 @@ function CTA() {
 // FOOTER
 // ============================================================
 function Footer() {
-    const cols: [string, [string, string][]][] = [
-        [
-            "Product",
-            [
-                ["Algorithms", "#algorithms"],
-                ["3D Loading", "#loading"],
-                ["Route Planning", "#routing"],
-                ["Driver Handoff", "#"],
-            ],
-        ],
-        [
-            "Company",
-            [
-                ["About", "#"],
-                ["Research", "#"],
-                ["Careers", "#"],
-                ["Contact", "#"],
-            ],
-        ],
-        [
-            "Resources",
-            [
-                ["Documentation", "#"],
-                ["Benchmarks", "#"],
-                ["Changelog", "#"],
-                ["API", "#"],
-            ],
-        ],
-    ];
+    const { t } = useTranslation();
+    const columns = t("footer.columns", { returnObjects: true }) as {
+        heading: string;
+        items: { label: string; href: string }[];
+    }[];
 
     return (
         <footer
             className="pb-9"
             style={{ background: HERO_DARK, color: "#F2EBDC" }}
         >
-            <div className="max-w-[1280px] mx-auto px-8 pt-15">
+            <div className="max-w-7xl mx-auto px-8 pt-15">
                 <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr_1fr_1fr] gap-12 pb-12">
                     <div>
                         <div className="flex items-center gap-2.5 font-semibold text-[17px] tracking-[-0.02em] mb-4">
@@ -1811,18 +1835,16 @@ function Footer() {
                             OptiTruck
                         </div>
                         <p className="text-sm text-white/70 leading-relaxed max-w-[320px]">
-                            3D cargo loading and multi-stop route planning for
-                            fleet operators. Built on peer-reviewed operations
-                            research, benchmarked against real shipments.
+                            {t("footer.description")}
                         </p>
                     </div>
-                    {cols.map(([heading, items]) => (
-                        <div key={heading}>
+                    {columns.map((col) => (
+                        <div key={col.heading}>
                             <h5 className="text-[11px] uppercase tracking-[0.14em] text-white/50 m-0 mb-4">
-                                {heading}
+                                {col.heading}
                             </h5>
                             <ul className="list-none p-0 m-0 flex flex-col gap-2.5">
-                                {items.map(([label, href]) => (
+                                {col.items.map(({ label, href }) => (
                                     <li key={label}>
                                         <a
                                             href={href}
@@ -1838,8 +1860,8 @@ function Footer() {
                 </div>
 
                 <div className="border-t border-white/10 pt-9 flex justify-between items-center text-xs text-white/45">
-                    <div>© 2026 OPTITRUCK · BUILT FOR FLEETS</div>
-                    <div>v2.4.1 · GRASP-OPT</div>
+                    <div>{t("footer.copyright")}</div>
+                    <div>{t("footer.version")}</div>
                 </div>
             </div>
         </footer>

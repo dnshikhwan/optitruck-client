@@ -65,7 +65,10 @@ function Shipments() {
 
     return (
         <DashboardLayout>
-            <div className="flex items-center justify-between">
+            <div
+                id="shipments-table"
+                className="flex items-center justify-between"
+            >
                 <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
                     {t("shipments")}
                 </h1>

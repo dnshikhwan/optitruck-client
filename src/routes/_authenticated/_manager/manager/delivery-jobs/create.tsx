@@ -227,7 +227,10 @@ function CreateDeliveryJob() {
                 </div>
             </div>
             <StepIndicator steps={steps} currentStep={currentStep} />
-            <div className="flex items-start gap-4">
+            <div
+                id="create-delivery-job-form"
+                className="flex items-start gap-4"
+            >
                 {/* Step 1 — Select Shipments */}
                 {currentStep === 1 && (
                     <Card className="w-full bg-transparent border-none shadow-none">

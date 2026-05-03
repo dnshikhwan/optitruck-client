@@ -130,6 +130,7 @@ function RouteComponent() {
             toast.success("User successfully signed up");
             await new Promise((r) => setTimeout(r, 650));
             navigate({ to: "/auth/login", search: { redirect: "/" } });
+            sessionStorage.setItem("showOnboarding", "true");
         },
         onError: (error) => {
             toast.error(error.message);

@@ -258,5 +258,429 @@
             }
         }
     },
-    "status_in_transit": "In Transit"
+    "status_in_transit": "In Transit",
+    "add_driver": "Add Driver",
+    "invite_your_driver": "Invite your driver",
+    "invite_driver_description": "Invite your driver to get the most out",
+    "invite_with_link": "Invite with link",
+    "copy": "Copy",
+    "copied": "Copied",
+    "my_account": "My Account",
+    "logout": "Log out",
+    "length_cm": "Length (cm)",
+    "width_cm": "Width (cm)",
+    "height_cm": "Height (cm)",
+    "max_weight_kg": "Max Weight (kg)",
+    "form": {
+        "advanced": {
+            "toggle": "Advanced: loading constraints",
+            "description": "Optional. These fields control how the packing algorithm enforces LIFO unloading and weight balance. Leave as defaults if unsure.",
+            "doorSide": {
+                "label": "Door Side",
+                "placeholder": "Select door side",
+                "helper": "Determines which direction items unload for LIFO checking.",
+                "options": {
+                    "rear": "Rear (most trucks)",
+                    "left": "Left side",
+                    "right": "Right side"
+                }
+            },
+            "cog": {
+                "minLabel": "CoG Min Ratio",
+                "maxLabel": "CoG Max Ratio",
+                "helper": "Acceptable center-of-gravity zone as a fraction of cargo length (0 = cab wall, 1 = door). Defaults mean the load must balance within the middle third of the cargo bay."
+            }
+        }
+    },
+    "header": {
+        "title": "Algorithm Report Review",
+        "description": "Click print to export as PDF via your browser",
+        "printButton": "Print / Export PDF"
+    },
+    "report": {
+        "title": "Technical Report",
+        "subtitle": "Load and Route Optimisation for Vehicles",
+        "generatedAt": "Generated:",
+        "meta": {
+            "shipmentId": "Shipment Id ({{count}})",
+            "vehicle": "Vehicle",
+            "dimensions": "Dimensions (L × W × H)",
+            "volume": "Volume",
+            "bestAlgorithm": "Best Algorithm"
+        }
+    },
+    "summary": {
+        "title": "Summary",
+        "bestUtilisation": "Best Utilisation",
+        "itemsPacked": "Items Packed (Best)",
+        "fastestAlgorithm": "Fastest Algorithm",
+        "algorithmsEvaluated": "Algorithms Evaluated",
+        "failed": "({{count}} failed)",
+        "fullyCompliant": "Fully Compliant",
+        "fullyCompliantHelper": "Passed all four constraint checks"
+    },
+    "comparison": {
+        "title": "Algorithm Comparison"
+    },
+    "performance": {
+        "title": "Performance Analysis",
+        "fig1": "Fig 1. — Volume Utilisation (%)",
+        "fig2": "Fig 2. — Execution Time (ms)",
+        "fig3": "Fig 3. — Constraint Violations by Algorithm"
+    },
+    "chart": {
+        "volumeUtilisation": "Volume Utilisation (%)",
+        "executionTime": "Execution Time (ms)",
+        "lifoViolations": "LIFO Violations",
+        "fragilityViolations": "Fragility Violations"
+    },
+    "errors": {
+        "fetchFailed": "Error fetching delivery job"
+    },
+    "columns": {
+        "no": "#",
+        "algorithm": "Algorithm",
+        "volumeUtilization": "Volume Utilization",
+        "weightUtilization": "Weight Utilization",
+        "itemsPacked": "Items Packed",
+        "executionTime": "Execution Time",
+        "lifo": "LIFO",
+        "support": "Support",
+        "fragility": "Fragility",
+        "balance": "Balance",
+        "status": "Status"
+    },
+    "algorithms": {
+        "greedy_search": "Greedy Search",
+        "h1": "H1",
+        "bottom_left_fill": "Bottom Left Fit",
+        "extreme_point": "Extreme Point",
+        "grasp_vnd": "GRASP/VND"
+    },
+    "validation": {
+        "lifoLabel": "LIFO",
+        "lifoExplanation": "Last-In-First-Out compliance. Items for earlier stops must be reachable without moving items for later stops. The number shown is the count of blocking pairs.",
+        "supportLabel": "Support",
+        "supportExplanation": "Every placed item has enough of its base resting on the floor or on other items. Average support is {{ratioPct}} across all placed items.",
+        "fragilityLabel": "Fragility",
+        "fragilityExplanation": "No fragile or non-stackable item has too much weight loaded on top of it. The number shown is the count of crushed items.",
+        "cogLabel": "CoG",
+        "cogExplanation": "Load's center of gravity sits within the acceptable zone along the cargo bay length. Current CoG is at {{ratioPct}} from the cab wall."
+    },
+    "status_algo": {
+        "completed": "Completed",
+        "running": "Running",
+        "failed": "Failed"
+    },
+    "time": {
+        "ms": "{{value}} ms",
+        "s": "{{value}} s",
+        "min": "{{value}} min"
+    },
+    "onboarding_welcome_title": "Welcome to OptiTruck!",
+    "onboarding_welcome_content": "You're all set up. Let's take a quick tour so you can hit the ground running.",
+    "onboarding_dashboard_title": "Your Dashboard",
+    "onboarding_dashboard_content": "See active trucks, unassigned shipments, and packing efficiency at a glance.",
+    "onboarding_setup_warehouse_title": "Set Up Your Warehouse",
+    "onboarding_setup_warehouse_content": "Before creating jobs, set your warehouse location — the origin point for all your deliveries.",
+    "onboarding_warehouse_title": "Warehouse",
+    "onboarding_warehouse_content": "Add your warehouse address here. OptiTruck uses this to calculate optimal routes.",
+    "onboarding_trucks_title": "Manage Your Trucks",
+    "onboarding_trucks_content": "Add your fleet here. Each truck has its own dimensions and capacity used for bin-packing optimization.",
+    "onboarding_shipments_title": "Create Shipments",
+    "onboarding_shipments_content": "Shipments are your cargo — each one has dimensions and weight. OptiTruck packs them optimally.",
+    "onboarding_delivery_job_title": "Create a Delivery Job",
+    "onboarding_delivery_job_content": "Assign shipments to a truck and OptiTruck handles the packing and routing automatically.",
+    "onboarding_done_title": "You're ready!",
+    "onboarding_done_content": "Start by adding your warehouse, then your trucks, then create your first delivery job.",
+    "nav": {
+        "algorithms": "Algorithms",
+        "loading3d": "3D Loading",
+        "routing": "Routing",
+        "howItWorks": "How it works",
+        "pricing": "Pricing",
+        "login": "Log In",
+        "signup": "Sign Up",
+        "dashboard": "Dashboard",
+        "logout": "Logout"
+    },
+    "hero": {
+        "badge": "3D loading + multi-stop routing",
+        "heading1": "Smarter loading,",
+        "headingItalic": "smarter",
+        "headingColored": "routing.",
+        "description": "Stop loading trucks by intuition. Five proven packing algorithms compete to find the best fit for every shipment, while delivery routes are optimized end-to-end — from warehouse to final stop.",
+        "cta": "Sign Up →",
+        "stats": {
+            "utilizationValue": "85",
+            "utilizationDesc": "Median volume utilization across benchmarked runs",
+            "algorithmsValue": "5",
+            "algorithmsSuffix": "algorithms",
+            "algorithmsDesc": "Run in parallel on every shipment, side by side",
+            "lifoValue": "LIFO",
+            "lifoDesc": "Packed in reverse stop order, every time"
+        },
+        "visual": {
+            "volumeUtilization": "Volume utilization",
+            "itemsPacked": "Items packed",
+            "lifoCompliant": "LIFO compliant",
+            "lifoValue": "✓ Yes",
+            "cgCheck": "CG check",
+            "cgValue": "✓ Pass",
+            "algorithm": "Algorithm",
+            "routePill": "Route 4 stops",
+            "front": "FRONT",
+            "rear": "REAR"
+        }
+    },
+    "logos": {
+        "tagline": "Trusted by fleet operators across logistics, e-commerce, and freight"
+    },
+    "algorithms_landing": {
+        "eyebrow": "FIVE ALGORITHMS, ONE WINNER",
+        "heading1": "Pack smarter,",
+        "headingItalic": "not",
+        "headingColored": "harder.",
+        "description": "Upload your cargo list, pick a truck, and watch five different packing algorithms work in parallel. Each one returns a complete 3D placement — and you choose the result that fits your priorities.",
+        "winner": "WINNER",
+        "volLabel": "VOL",
+        "timeLabel": "TIME",
+        "benchmark": "// Benchmarks from a 500-item production fleet, mixed cargo profile. Your results will vary by item mix and truck class.",
+        "items": [
+            {
+                "id": "ALGO_01",
+                "name": "Naive Greedy",
+                "desc": "Fast baseline. Drops items into the first available position by descending volume — useful as a sanity check.",
+                "vol": "81.4%",
+                "w": 81,
+                "time": "0.04s"
+            },
+            {
+                "id": "ALGO_02",
+                "name": "Bottom-Left-Fill",
+                "desc": "Classic 2D heuristic extended to 3D. Pushes every item to the bottom-left corner before settling.",
+                "vol": "87.1%",
+                "w": 87,
+                "time": "0.18s"
+            },
+            {
+                "id": "ALGO_03",
+                "name": "Extreme Point",
+                "desc": "Tracks corner candidates after each placement. Better for irregular cargo mixes and tight tolerances.",
+                "vol": "90.6%",
+                "w": 91,
+                "time": "0.42s"
+            },
+            {
+                "id": "ALGO_04",
+                "name": "H1 Layer-Shelf",
+                "desc": "Builds horizontal layers, then shelves within layers. Strong for uniform pallet-style cargo.",
+                "vol": "88.9%",
+                "w": 89,
+                "time": "0.21s"
+            },
+            {
+                "id": "ALGO_05",
+                "name": "GRASP Metaheuristic",
+                "desc": "Greedy randomized adaptive search. Iterates and refines — the highest packing density on most real fleets.",
+                "vol": "94.2%",
+                "w": 94,
+                "time": "2.81s",
+                "winner": true
+            }
+        ]
+    },
+    "loading3d": {
+        "eyebrow": "3D VISUALIZATION",
+        "heading1": "Every box, exactly",
+        "heading2": "where it sits.",
+        "description": "Every packing result renders as an interactive 3D scene inside the truck. Rotate, zoom, and inspect each item where it goes. FRONT and REAR labels make orientation obvious — and the truck wireframe stays out of your way.",
+        "features": [
+            "Per-item position, orientation, and packing sequence",
+            "This-side-up flags rendered on every box face",
+            "Driver-ready read-only view for handoff",
+            "Center-of-gravity overlay & support-ratio check"
+        ],
+        "overlay": {
+            "filename": "// truck_view.3d",
+            "meta": "SH-2814 · 42 items · GRASP",
+            "itemLabel": "ITEM #018",
+            "itemMeta": "60×42×30 · stop 3 · 12.4 kg",
+            "packed": "42 / 42 PACKED"
+        }
+    },
+    "routing": {
+        "eyebrow": "MULTI-STOP ROUTING",
+        "heading1": "Routes first.",
+        "heading2": "Then the cargo.",
+        "description": "Group shipments into delivery jobs and let the routing engine work out the stop order before packing begins. Cargo is then loaded in reverse — last in, first out by stop — so drivers don't have to dig through the truck at every drop.",
+        "features": [
+            "Stop sequencing optimized for distance & time windows",
+            "Cargo packed in last-in, first-out unloading order",
+            "Route distance, ETA, and execution time on every job"
+        ],
+        "map": {
+            "jobKey": "JOB",
+            "stopsKey": "STOPS",
+            "distanceKey": "DISTANCE",
+            "warehouse": "WAREHOUSE",
+            "stops": [
+                { "label": "Stop 01", "time": "09:40 · 12 items" },
+                { "label": "Stop 02", "time": "10:55 · 8 items" },
+                { "label": "Stop 03", "time": "12:20 · 22 items" }
+            ]
+        },
+        "stats": [
+            { "key": "ETA total", "value": "3h 24m" },
+            { "key": "Distance", "value": "187 km" },
+            { "key": "Items", "value": "42" },
+            { "key": "Pack order", "value": "3 → 2 → 1" }
+        ]
+    },
+    "validators": {
+        "eyebrow": "VALIDATORS · CHECKED AFTER PLACEMENT",
+        "heading1": "Every load gets",
+        "headingItalic": "graded.",
+        "description": "Once the algorithm finishes packing, four validators measure the result and report compliance. The packers don't try to satisfy these — the validators tell you whether they did.",
+        "footerNote": "// Validators run on every result from every algorithm. Compliance flags surface in the comparison view, so you can see who passed before you commit a load.",
+        "items": [
+            {
+                "title": "LIFO ordering",
+                "tag": "validateLifo",
+                "desc": "Checks that no later-delivery item blocks an earlier-delivery item — neither horizontally (closer to the door) nor vertically (stacked on top).",
+                "reports": ["lifo_ok", "lifo_violations"]
+            },
+            {
+                "title": "Support ratio",
+                "tag": "validateSupport",
+                "desc": "Every non-floor item must have at least 70% of its bottom face supported by either the truck floor or items below it.",
+                "reports": ["support_ok", "avg_support_ratio"]
+            },
+            {
+                "title": "Fragility",
+                "tag": "validateFragility",
+                "desc": "Items flagged HIGH fragility have nothing on top. Stack-weight limits and is_stackable=false rules are enforced.",
+                "reports": ["fragility_ok", "fragility_violations"],
+                "accent": true
+            },
+            {
+                "title": "Center of gravity",
+                "tag": "validateCog",
+                "desc": "Computes the cargo's CG along the truck depth axis, normalized 0=cab to 1=door. Must fall within the truck's tolerance band.",
+                "reports": ["cog_ok", "cog_ratio"]
+            }
+        ]
+    },
+    "howItWorks": {
+        "eyebrow": "FIVE STEPS, FROM EXCEL TO DRIVER",
+        "heading1": "How it",
+        "headingItalic": "works.",
+        "description": "From spreadsheet to driver handoff — the same workflow your team already follows, just measured and optimized at every step.",
+        "steps": [
+            {
+                "n": "STEP 01",
+                "h": "Set up your fleet",
+                "p": "Add trucks with dimensions, weight limits, door side, and CG tolerances. One-time setup per vehicle."
+            },
+            {
+                "n": "STEP 02",
+                "h": "Create shipments",
+                "p": "Drop in a cargo Excel, pick a truck, set drop points and times. Live summary as you go."
+            },
+            {
+                "n": "STEP 03",
+                "h": "Build a delivery job",
+                "p": "Group shipments going out together, assign trucks. Routing runs first, sequencing the stops."
+            },
+            {
+                "n": "STEP 04",
+                "h": "Compare and choose",
+                "p": "All five algorithms run in parallel. Inspect the 3D results, check the metrics, pick the winner."
+            },
+            {
+                "n": "STEP 05",
+                "h": "Hand off to the driver",
+                "p": "Assign a driver. They acknowledge and get a read-only loading plan on their device."
+            }
+        ]
+    },
+    "metrics": {
+        "eyebrow": "DECISIONS YOU CAN DEFEND",
+        "heading1": "Every choice,",
+        "headingItalic": "on screen.",
+        "items": [
+            {
+                "label": "Volume utilization",
+                "num": "94",
+                "small": ".2%",
+                "desc": "Median across the GRASP algorithm on production fleets."
+            },
+            {
+                "label": "Items per shipment",
+                "num": "42",
+                "small": " avg",
+                "desc": "From small parcel runs to full pallet loads."
+            },
+            {
+                "label": "Avg pack time",
+                "num": "2.8",
+                "small": "s",
+                "desc": "Five algorithms, in parallel, per shipment."
+            },
+            {
+                "label": "Fragility violations",
+                "num": "0",
+                "small": "",
+                "desc": "Caught at planning, never at delivery."
+            }
+        ],
+        "builtOnLabel": "// Built on",
+        "builtOnText": "Peer-reviewed operations research — Martello-Pisinger-Vigo, de Castro Silva, Crainic, and others. Implemented and benchmarked against standard datasets. Not a black box.",
+        "builtOnLink": "Read the paper trail →"
+    },
+    "cta": {
+        "eyebrowNum": "07",
+        "eyebrow": "READY WHEN YOU ARE",
+        "heading1": "Stop shipping",
+        "headingItalic": "empty",
+        "headingColored": "air.",
+        "description": "Get a 30-minute walkthrough on your own cargo data. We'll run all five algorithms on a real shipment and compare the results live.",
+        "primaryButton": "Get a demo →",
+        "secondaryButton": "Talk to the team",
+        "disclaimer": "// NO SETUP CALL · DEMO IN 24H · CANCEL ANY TIME"
+    },
+    "footer": {
+        "description": "3D cargo loading and multi-stop route planning for fleet operators. Built on peer-reviewed operations research, benchmarked against real shipments.",
+        "copyright": "© 2026 OPTITRUCK · BUILT FOR FLEETS",
+        "version": "v2.4.1 · GRASP-OPT",
+        "columns": [
+            {
+                "heading": "Product",
+                "items": [
+                    { "label": "Algorithms", "href": "#algorithms" },
+                    { "label": "3D Loading", "href": "#loading" },
+                    { "label": "Route Planning", "href": "#routing" },
+                    { "label": "Driver Handoff", "href": "#" }
+                ]
+            },
+            {
+                "heading": "Company",
+                "items": [
+                    { "label": "About", "href": "#" },
+                    { "label": "Research", "href": "#" },
+                    { "label": "Careers", "href": "#" },
+                    { "label": "Contact", "href": "#" }
+                ]
+            },
+            {
+                "heading": "Resources",
+                "items": [
+                    { "label": "Documentation", "href": "#" },
+                    { "label": "Benchmarks", "href": "#" },
+                    { "label": "Changelog", "href": "#" },
+                    { "label": "API", "href": "#" }
+                ]
+            }
+        ]
+    }
 }

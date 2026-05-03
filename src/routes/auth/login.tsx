@@ -93,7 +93,6 @@ function LoginComponent() {
                 const user = await auth.login(value);
                 queryClient.clear();
                 setIsSuccess(true);
-                await new Promise((r) => setTimeout(r, 650));
                 if (user.role === "manager") {
                     navigate({ to: "/manager" });
                 } else {
