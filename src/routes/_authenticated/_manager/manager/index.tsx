@@ -57,6 +57,16 @@ function IndexDashboard() {
         select: (response) => response.data,
     });
 
+    const { data: deliveryJobs = [] } = useQuery({
+        queryKey: ["delivery-jobs"],
+        queryFn: async () => {
+            const res = await apiFetch("/delivery-jobs");
+            if (!res.ok) throw new Error("Error fetching delivery jobs");
+            return res.json();
+        },
+        select: (response) => response.data ?? [],
+    });
+
     const { data: trucks = [] } = useQuery<any, Error, Truck[]>({
         queryKey: ["trucks"],
         queryFn: async () => {
@@ -86,7 +96,7 @@ function IndexDashboard() {
         () => [
             {
                 icon: <TruckIcon className="size-4" />,
-                value: "0",
+                value: String(deliveryJobs.length),
                 title: t("total_delivery_jobs"),
                 description: t("daily_delivery_jobs_desc"),
             },

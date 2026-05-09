@@ -1,0 +1,82 @@
+{
+    "breadcrumb": "Delivery Job Detail",
+    "header": {
+        "created": "Created",
+        "shipmentCount_one": "{{count}} Shipment",
+        "shipmentCount_other": "{{count}} Shipments",
+        "exportReport": "Export Report"
+    },
+    "stats": {
+        "totalItems": "Total Items",
+        "totalItemsDesc_one": "across {{count}} shipment",
+        "totalItemsDesc_other": "across {{count}} shipments",
+        "totalWeight": "Total Item Weight",
+        "totalWeightDesc": "max {{weight}} kg",
+        "totalVolume": "Total Item Volume",
+        "executionTime": "Total Execution Time",
+        "executionTimeDesc": "Time taken to run packing & routing optimization",
+        "selectedAlgo": "Selected Packing Algorithm",
+        "selectedAlgoUtil": "{{percent}}% volume utilization",
+        "selectedAlgoEmpty": "Select an algorithm result below",
+        "timeS": "{{value}} s",
+        "timeMs": "{{value}} ms"
+    },
+    "shipments": {
+        "title_one": "Shipment ({{count}})",
+        "title_other": "Shipments ({{count}})",
+        "items_one": "{{count}} item",
+        "items_other": "{{count}} items",
+        "weight": "{{weight}} kg"
+    },
+    "packingView": {
+        "title": "3D Packing View",
+        "showing": "Showing:",
+        "noneSelected": "None selected",
+        "saving": "Saving...",
+        "confirmSelection": "Confirm Selection",
+        "emptyTitle": "Select an algorithm result above",
+        "emptyDesc": "to preview the 3D packing arrangement"
+    },
+    "routing": {
+        "title": "Routing Optimization",
+        "retriggering": "Retriggering...",
+        "reRun": "Re-run Routing",
+        "notFound": "No routing job found for this delivery job.",
+        "inProgress": "Routing in progress...",
+        "failed": "Routing failed. Make sure all shipments have coordinates set, then re-run."
+    },
+    "driverAssignment": {
+        "title": "Driver Assignment",
+        "selectPlaceholder": "Select a driver",
+        "assigning": "Assigning...",
+        "confirm": "Confirm Assignment"
+    },
+    "truckInfo": {
+        "title": "Truck Info",
+        "maxWeight": "Max Weight",
+        "volume": "Volume",
+        "dimensions": "L × W × H (cm)"
+    },
+    "packingResult": {
+        "title": "Packing Result",
+        "hideComparison": "Hide algorithm comparison",
+        "viewComparison": "View algorithm comparison",
+        "manuallySelected": "Manually selected by manager",
+        "autoSelected": "Auto-selected · best result across 5 algorithms",
+        "utilization": "{{percent}}% utilization"
+    },
+    "stopOrder": {
+        "title": "Optimized stop order",
+        "unknownShipment": "Unknown Shipment"
+    },
+    "errors": {
+        "fetchDeliveryJob": "Error fetching delivery job",
+        "fetchDrivers": "Error fetching drivers",
+        "fetchCompany": "Failed to fetch company"
+    },
+    "toast": {
+        "driverAssigned": "Driver assigned successfully",
+        "algorithmSelected": "Algorithm result selected",
+        "routingRetriggered": "Routing job retriggered"
+    }
+}

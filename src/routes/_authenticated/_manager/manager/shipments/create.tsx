@@ -31,6 +31,9 @@ import {
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { ImportExcelButton } from "@/components/ImportExcelButton";
+import { FragilityLevel, HandlingCategory } from "@/interfaces/create-shipment";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/shipments/create",
@@ -41,22 +44,10 @@ export const Route = createFileRoute(
     },
 });
 
-export enum FragilityLevel {
-    NONE = 0,
-    LOW = 1,
-    MEDIUM = 2,
-    HIGH = 3,
-}
-
-export enum HandlingCategory {
-    STANDARD = "standard",
-    FRAGILE = "fragile",
-    HAZARDOUS = "hazardous",
-    PERISHABLE = "perishable",
-}
-
 type ShipmentFormData = {
     name: string;
+    customerName: string;
+    customerPhone: string;
     notes?: string;
     scheduled_at: string;
     drop_point: string;
@@ -117,6 +108,8 @@ export interface ShippingItem {
 
 interface createShipmentPayload {
     name: string;
+    customerName: string;
+    customerPhone: string;
     notes?: string;
     scheduled_at: string;
     drop_point: string;
@@ -154,6 +147,13 @@ function CreateShipment() {
     // Moved inside component so validation messages use the active language
     const formSchema = z.object({
         name: z.string().min(1, t("shipment_name_required")),
+        customerName: z.string().min(1, t("customer_name_required")),
+        customerPhone: z
+            .string()
+            .min(1, t("customer_phone_required"))
+            .refine((val) => isValidPhoneNumber(val), {
+                message: t("customer_phone_invalid"),
+            }),
         notes: z.string().optional().or(z.literal("")),
         scheduled_at: z
             .string()
@@ -214,6 +214,8 @@ function CreateShipment() {
     const form = useForm({
         defaultValues: {
             name: "",
+            customerName: "",
+            customerPhone: "",
             notes: "",
             scheduled_at: "",
             drop_point: "",
@@ -232,7 +234,12 @@ function CreateShipment() {
                 return;
             }
             const payload = {
-                ...value,
+                name: value.name,
+                customerName: value.customerName,
+                customerPhone: value.customerPhone,
+                notes: value.notes,
+                scheduled_at: value.scheduled_at,
+                drop_point: value.drop_point,
                 lat: coords?.lat,
                 lng: coords?.lng,
                 shipping_items: itemsResult.data,
@@ -393,6 +400,7 @@ function CreateShipment() {
                                                     );
                                                 }}
                                             />
+
                                             <form.Field
                                                 name="drop_point"
                                                 children={(field) => {
@@ -511,6 +519,150 @@ function CreateShipment() {
                             </div>
 
                             <Separator />
+                            <div className="w-full">
+                                <FieldSet>
+                                    <FieldLegend>
+                                        <div className="flex h-5 items-center gap-2 text-xs tracking-widest uppercase">
+                                            <span className="text-orange-500">
+                                                02
+                                            </span>
+                                            <Separator orientation="vertical" />
+                                            {t("shipment_customer_info")}
+                                        </div>
+                                    </FieldLegend>
+                                    <FieldGroup>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <form.Field
+                                                name="customerName"
+                                                children={(field) => {
+                                                    const isInvalid =
+                                                        field.state.meta
+                                                            .isTouched &&
+                                                        !field.state.meta
+                                                            .isValid;
+                                                    return (
+                                                        <Field
+                                                            data-invalid={
+                                                                isInvalid
+                                                            }
+                                                        >
+                                                            <FieldLabel
+                                                                htmlFor={
+                                                                    field.name
+                                                                }
+                                                            >
+                                                                {t(
+                                                                    "customer_name",
+                                                                )}
+                                                            </FieldLabel>
+                                                            <Input
+                                                                id={field.name}
+                                                                name={
+                                                                    field.name
+                                                                }
+                                                                value={
+                                                                    field.state
+                                                                        .value
+                                                                }
+                                                                onBlur={
+                                                                    field.handleBlur
+                                                                }
+                                                                onChange={(e) =>
+                                                                    field.handleChange(
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                aria-invalid={
+                                                                    isInvalid
+                                                                }
+                                                                placeholder={t(
+                                                                    "customer_name_placeholder",
+                                                                )}
+                                                                autoComplete="off"
+                                                            />
+                                                            {isInvalid && (
+                                                                <FieldError
+                                                                    className="text-red-500"
+                                                                    errors={
+                                                                        field
+                                                                            .state
+                                                                            .meta
+                                                                            .errors
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    );
+                                                }}
+                                            />
+                                            <form.Field
+                                                name="customerPhone"
+                                                children={(field) => {
+                                                    const isInvalid =
+                                                        field.state.meta
+                                                            .isTouched &&
+                                                        !field.state.meta
+                                                            .isValid;
+                                                    return (
+                                                        <Field
+                                                            data-invalid={
+                                                                isInvalid
+                                                            }
+                                                        >
+                                                            <FieldLabel
+                                                                htmlFor={
+                                                                    field.name
+                                                                }
+                                                            >
+                                                                {t(
+                                                                    "customer_phone",
+                                                                )}
+                                                            </FieldLabel>
+                                                            <PhoneInput
+                                                                id={field.name}
+                                                                value={
+                                                                    field.state
+                                                                        .value
+                                                                }
+                                                                onChange={(
+                                                                    value,
+                                                                ) =>
+                                                                    field.handleChange(
+                                                                        value,
+                                                                    )
+                                                                }
+                                                                onBlur={
+                                                                    field.handleBlur
+                                                                }
+                                                                aria-invalid={
+                                                                    isInvalid
+                                                                }
+                                                                placeholder={t(
+                                                                    "customer_phone_placeholder",
+                                                                )}
+                                                            />
+                                                            {isInvalid && (
+                                                                <FieldError
+                                                                    className="text-red-500"
+                                                                    errors={
+                                                                        field
+                                                                            .state
+                                                                            .meta
+                                                                            .errors
+                                                                    }
+                                                                />
+                                                            )}
+                                                        </Field>
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+                                    </FieldGroup>
+                                </FieldSet>
+                            </div>
+
+                            <Separator />
 
                             {/* 02 — Cargo Items */}
                             <div className="w-full">
@@ -519,7 +671,7 @@ function CreateShipment() {
                                         <div className="flex w-full items-center justify-between flex-wrap gap-2">
                                             <div className="flex h-5 items-center gap-2 text-xs tracking-widest uppercase">
                                                 <span className="text-orange-500">
-                                                    02
+                                                    03
                                                 </span>
                                                 <Separator orientation="vertical" />
                                                 {t("cargo_items")}
@@ -653,7 +805,7 @@ function CreateShipment() {
                                     <FieldLegend className="w-full">
                                         <div className="flex h-5 items-center gap-2 text-xs tracking-widest uppercase">
                                             <span className="text-orange-500">
-                                                03
+                                                04
                                             </span>
                                             <Separator orientation="vertical" />
                                             {t("schedule_and_notes")}
@@ -872,16 +1024,18 @@ function CreateShipment() {
                             ].map((stat, i) => (
                                 <div
                                     key={i}
-                                    className="bg-muted/40 border rounded-md border-gray-800 p-3"
+                                    className="bg-muted/40 not-dark:bg-card-foreground  p-3"
                                 >
                                     <div className="flex flex-col items-center justify-center h-full">
-                                        <p className="text-xs text-center">
+                                        <p className="text-xs text-center not-dark:text-card">
                                             {stat.label}
                                         </p>
                                         <p className="text-indigo-300 font-bold text-lg">
                                             {stat.value}
                                         </p>
-                                        <p className="text-xs">{stat.unit}</p>
+                                        <p className="text-xs not-dark:text-card">
+                                            {stat.unit}
+                                        </p>
                                     </div>
                                 </div>
                             ))}

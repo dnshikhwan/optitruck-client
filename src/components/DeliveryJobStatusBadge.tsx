@@ -25,7 +25,8 @@ export const deliveryJobStatusConfig: Record<DeliveryJobStatus, BadgeConfig> = {
     [DeliveryJobStatus.READY]: {
         label: "Ready",
         variant: "default",
-        className: "bg-green-500/40 text-green-300 hover:bg-emerald-600",
+        className:
+            "dark:bg-green-500/40 bg-green-700 text-green-200 dark:text-green-300 hover:bg-emerald-600",
     },
     [DeliveryJobStatus.ASSIGNED]: {
         label: "Assigned",

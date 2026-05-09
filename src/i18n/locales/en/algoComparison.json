@@ -1,0 +1,19 @@
+{
+    "results": {
+        "columns": {
+            "algorithm": "Algorithm",
+            "volumeUtilization": "Volume Utilization",
+            "executionTime": "Execution Time",
+            "itemsPacked": "Items Packed"
+        },
+        "select": "Select",
+        "selected": "Selected"
+    },
+    "algorithms": {
+        "greedy_search": "Greedy Search",
+        "h1": "H1",
+        "bottom_left_fill": "Bottom Left Fit",
+        "extreme_point": "Extreme Point",
+        "grasp_vnd": "GRASP/VND"
+    }
+}

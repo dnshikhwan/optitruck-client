@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import type { AlgorithmName } from "@/interfaces/deliveryJob";
 import type { ColumnDef } from "@tanstack/react-table";
+import type { TFunction } from "i18next";
 
 export type AlgorithmResult = {
     algorithm: AlgorithmName;
@@ -12,83 +13,75 @@ export type AlgorithmResult = {
     execution_time_ms: string;
 };
 
-export const algorithmResultsColumns: ColumnDef<AlgorithmResult>[] = [
-    {
-        accessorKey: "algorithm",
-        header: "Algorithm",
-        cell: ({ row }) => {
-            const algo = row.original.algorithm;
-            switch (algo) {
-                case "greedy_search":
-                    return <div>Greedy Search</div>;
-                case "h1":
-                    return <div>H1</div>;
-                case "bottom_left_fill":
-                    return <div>Bottom Left Fill</div>;
-                case "extreme_point":
-                    return <div>Extreme Point</div>;
-                case "grasp_vnd":
-                    return <div>GRASP/VND</div>;
-            }
-        },
-    },
+function formatExecutionTime(ms: number, t: TFunction): string {
+    if (ms >= 60_000)
+        return t("time.min", { value: (ms / 1000 / 60).toFixed(2) });
+    if (ms >= 1_000) return t("time.s", { value: (ms / 1000).toFixed(2) });
+    return t("time.ms", { value: ms });
+}
 
-    {
-        accessorKey: "volume_utilization",
-        header: "Volume Utilization",
-        cell: ({ row }) => {
-            const value = row.original.volume_utilization;
-            return (
-                <div className="flex items-center gap-2">
-                    <Progress value={parseFloat(value)} className="w-12" />
-                    {value} %
-                </div>
-            );
+export function createAlgorithmResultsColumns(
+    t: TFunction,
+): ColumnDef<AlgorithmResult>[] {
+    return [
+        {
+            accessorKey: "algorithm",
+            header: t("results.columns.algorithm"),
+            cell: ({ row }) => (
+                <div>{t(`algorithms.${row.original.algorithm}`)}</div>
+            ),
         },
-    },
-    {
-        accessorKey: "execution_time_ms",
-        header: "Execution Time",
-        cell: ({ row }) => {
-            const execution_time = parseFloat(row.original.execution_time_ms);
-            if (execution_time >= 1000) {
+        {
+            accessorKey: "volume_utilization",
+            header: t("results.columns.volumeUtilization"),
+            cell: ({ row }) => {
+                const value = row.original.volume_utilization;
                 return (
-                    <div>
-                        {execution_time / 1000 >= 60
-                            ? (execution_time / 1000 / 60).toFixed(2) + " min"
-                            : (execution_time / 1000).toFixed(2) + " s"}
+                    <div className="flex items-center gap-2">
+                        <Progress value={parseFloat(value)} className="w-12" />
+                        {value} %
                     </div>
                 );
-            }
-            return <div>{execution_time} ms</div>;
+            },
         },
-    },
-    {
-        accessorKey: "items_packed",
-        header: "Items Packed",
-        cell: ({ row }) => {
-            const items_packed = row.original.items_packed;
-            const total = row.original.items_total;
-            return (
+        {
+            accessorKey: "execution_time_ms",
+            header: t("results.columns.executionTime"),
+            cell: ({ row }) => (
                 <div>
-                    {items_packed} / {total}
+                    {formatExecutionTime(
+                        parseFloat(row.original.execution_time_ms),
+                        t,
+                    )}
                 </div>
-            );
+            ),
         },
-    },
-    {
-        id: "actions",
-        cell: ({ row, table }) => {
-            const { selectedAlgo, onSelectAlgo } = table.options.meta as any;
-            const isSelected = selectedAlgo === row.original.algorithm;
-            return (
-                <Button
-                    onClick={() => onSelectAlgo(row.original.algorithm)}
-                    variant={isSelected ? "default" : "outline"}
-                >
-                    {isSelected ? "Selected" : "Select"}
-                </Button>
-            );
+        {
+            accessorKey: "items_packed",
+            header: t("results.columns.itemsPacked"),
+            cell: ({ row }) => (
+                <div>
+                    {row.original.items_packed} / {row.original.items_total}
+                </div>
+            ),
         },
-    },
-];
+        {
+            id: "actions",
+            cell: ({ row, table }) => {
+                const { selectedAlgo, onSelectAlgo } = table.options
+                    .meta as any;
+                const isSelected = selectedAlgo === row.original.algorithm;
+                return (
+                    <Button
+                        onClick={() => onSelectAlgo(row.original.algorithm)}
+                        variant={isSelected ? "default" : "outline"}
+                    >
+                        {isSelected
+                            ? t("results.selected")
+                            : t("results.select")}
+                    </Button>
+                );
+            },
+        },
+    ];
+}
