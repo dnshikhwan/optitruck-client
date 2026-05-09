@@ -1,0 +1,19 @@
+{
+    "results": {
+        "columns": {
+            "algorithm": "Алгоритм",
+            "volumeUtilization": "Использование объёма",
+            "executionTime": "Время выполнения",
+            "itemsPacked": "Упаковано позиций"
+        },
+        "select": "Выбрать",
+        "selected": "Выбрано"
+    },
+    "algorithms": {
+        "greedy_search": "Жадный поиск",
+        "h1": "H1",
+        "bottom_left_fill": "Метод нижнего левого угла",
+        "extreme_point": "Метод экстремальных точек",
+        "grasp_vnd": "GRASP/VND"
+    }
+}

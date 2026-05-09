@@ -1,0 +1,90 @@
+{
+    "breadcrumb": "Детали задания доставки",
+    "header": {
+        "created": "Создано",
+        "shipmentCount_one": "{{count}} отправка",
+        "shipmentCount_few": "{{count}} отправки",
+        "shipmentCount_many": "{{count}} отправок",
+        "shipmentCount_other": "{{count}} отправки",
+        "exportReport": "Экспорт отчёта"
+    },
+    "stats": {
+        "totalItems": "Всего позиций",
+        "totalItemsDesc_one": "в {{count}} отправке",
+        "totalItemsDesc_few": "в {{count}} отправках",
+        "totalItemsDesc_many": "в {{count}} отправках",
+        "totalItemsDesc_other": "в {{count}} отправках",
+        "totalWeight": "Общий вес позиций",
+        "totalWeightDesc": "макс. {{weight}} кг",
+        "totalVolume": "Общий объём позиций",
+        "executionTime": "Время выполнения",
+        "executionTimeDesc": "Время расчёта упаковки и маршрутизации",
+        "selectedAlgo": "Выбранный алгоритм упаковки",
+        "selectedAlgoUtil": "{{percent}}% использования объёма",
+        "selectedAlgoEmpty": "Выберите результат алгоритма ниже",
+        "timeS": "{{value}} с",
+        "timeMs": "{{value}} мс"
+    },
+    "shipments": {
+        "title_one": "Отправка ({{count}})",
+        "title_few": "Отправки ({{count}})",
+        "title_many": "Отправок ({{count}})",
+        "title_other": "Отправки ({{count}})",
+        "items_one": "{{count}} позиция",
+        "items_few": "{{count}} позиции",
+        "items_many": "{{count}} позиций",
+        "items_other": "{{count}} позиций",
+        "weight": "{{weight}} кг"
+    },
+    "packingView": {
+        "title": "3D-просмотр упаковки",
+        "showing": "Отображается:",
+        "noneSelected": "Не выбрано",
+        "saving": "Сохранение...",
+        "confirmSelection": "Подтвердить выбор",
+        "emptyTitle": "Выберите результат алгоритма выше",
+        "emptyDesc": "для предварительного просмотра 3D-упаковки"
+    },
+    "routing": {
+        "title": "Оптимизация маршрута",
+        "retriggering": "Перезапуск...",
+        "reRun": "Повторить маршрутизацию",
+        "notFound": "Задание маршрутизации для этой доставки не найдено.",
+        "inProgress": "Маршрутизация выполняется...",
+        "failed": "Ошибка маршрутизации. Убедитесь, что у всех отправок указаны координаты, и запустите снова."
+    },
+    "driverAssignment": {
+        "title": "Назначение водителя",
+        "selectPlaceholder": "Выберите водителя",
+        "assigning": "Назначение...",
+        "confirm": "Подтвердить назначение"
+    },
+    "truckInfo": {
+        "title": "Информация о грузовике",
+        "maxWeight": "Макс. вес",
+        "volume": "Объём",
+        "dimensions": "Д × Ш × В (см)"
+    },
+    "packingResult": {
+        "title": "Результат упаковки",
+        "hideComparison": "Скрыть сравнение алгоритмов",
+        "viewComparison": "Показать сравнение алгоритмов",
+        "manuallySelected": "Выбрано вручную менеджером",
+        "autoSelected": "Авто-выбор · лучший результат из 5 алгоритмов",
+        "utilization": "{{percent}}% утилизации"
+    },
+    "stopOrder": {
+        "title": "Оптимизированный порядок остановок",
+        "unknownShipment": "Неизвестная отправка"
+    },
+    "errors": {
+        "fetchDeliveryJob": "Ошибка загрузки задания доставки",
+        "fetchDrivers": "Ошибка загрузки водителей",
+        "fetchCompany": "Ошибка загрузки данных компании"
+    },
+    "toast": {
+        "driverAssigned": "Водитель успешно назначен",
+        "algorithmSelected": "Результат алгоритма выбран",
+        "routingRetriggered": "Задание маршрутизации перезапущено"
+    }
+}

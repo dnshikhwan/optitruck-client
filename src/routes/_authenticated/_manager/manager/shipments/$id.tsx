@@ -27,7 +27,6 @@ import {
     CardHeader,
 } from "@/components/ui/card";
 import { ShipmentItemsDataTable } from "@/components/tables/shipment_items.tsx/data-table";
-import { shipmentItemsColumns } from "@/components/tables/shipment_items.tsx/columns";
 import type { Shipment } from "@/interfaces/shipments";
 import {
     Stat,
@@ -36,6 +35,7 @@ import {
     StatValue,
 } from "@/components/ui/stat";
 import { Button } from "@/components/ui/button";
+import { createShipmentItemsColumns } from "@/components/tables/shipment_items.tsx/columns";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/shipments/$id",
@@ -49,6 +49,7 @@ export const Route = createFileRoute(
 function ShipmentDetails() {
     const { id } = Route.useParams();
     const { t } = useTranslation();
+    const { t: tShipments } = useTranslation();
     const navigate = useNavigate();
 
     const { data: shipment, isLoading } = useQuery<any, Error, Shipment>({
@@ -218,7 +219,7 @@ function ShipmentDetails() {
                     </CardHeader>
                     <CardContent>
                         <ShipmentItemsDataTable
-                            columns={shipmentItemsColumns}
+                            columns={createShipmentItemsColumns(tShipments)}
                             data={shipment?.shipment_items || []}
                         />
                     </CardContent>

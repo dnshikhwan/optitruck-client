@@ -3,11 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import {
-    type ShippingItem,
-    FragilityLevel,
-    HandlingCategory,
-} from "@/routes/_authenticated/_manager/manager/shipments/create";
+import { type ShippingItem } from "@/routes/_authenticated/_manager/manager/shipments/create";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Field, FieldLabel } from "./ui/field";
 import { Switch } from "./ui/switch";
@@ -18,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "./ui/select";
+import { FragilityLevel, HandlingCategory } from "@/interfaces/create-shipment";
 
 interface ShippingItemFormProps {
     items: ShippingItem[];

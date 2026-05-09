@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "../../../../../../layouts";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+} from "@/components/ui/card";
 import {
     Field,
     FieldError,
@@ -274,33 +279,35 @@ function WarehousePage() {
                                 {t("loading")}
                             </p>
                         ) : hasWarehouse ? (
-                            <div className="flex flex-col gap-2">
-                                <div className="flex items-center gap-2 text-green-500">
-                                    <MapPin className="h-4 w-4" />
-                                    <span className="text-xs font-medium">
-                                        {t("location_set")}
-                                    </span>
+                            <>
+                                <div className="flex flex-col gap-5">
+                                    <div className="flex items-center gap-2 text-green-500">
+                                        <MapPin className="h-4 w-4" />
+                                        <CardDescription>
+                                            {t("location_set")}
+                                        </CardDescription>
+                                    </div>
+                                    <div className="bg-muted/40 border rounded-md p-3 flex flex-col gap-1">
+                                        <p className="text-xs text-muted-foreground">
+                                            {t("latitude")}
+                                        </p>
+                                        <p className="text-sm font-mono">
+                                            {Number(
+                                                company.warehouseLat,
+                                            ).toFixed(6)}
+                                        </p>
+                                        <Separator className="my-1" />
+                                        <p className="text-xs text-muted-foreground">
+                                            {t("longitude")}
+                                        </p>
+                                        <p className="text-sm font-mono">
+                                            {Number(
+                                                company.warehouseLng,
+                                            ).toFixed(6)}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="bg-muted/40 border border-gray-800 rounded-md p-3 flex flex-col gap-1">
-                                    <p className="text-xs text-muted-foreground">
-                                        {t("latitude")}
-                                    </p>
-                                    <p className="text-sm font-mono">
-                                        {Number(company.warehouseLat).toFixed(
-                                            6,
-                                        )}
-                                    </p>
-                                    <Separator className="my-1" />
-                                    <p className="text-xs text-muted-foreground">
-                                        {t("longitude")}
-                                    </p>
-                                    <p className="text-sm font-mono">
-                                        {Number(company.warehouseLng).toFixed(
-                                            6,
-                                        )}
-                                    </p>
-                                </div>
-                            </div>
+                            </>
                         ) : (
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <MapPin className="h-4 w-4" />

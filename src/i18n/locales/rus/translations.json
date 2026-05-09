@@ -760,5 +760,25 @@
             "strong": "Надёжный",
             "excellent": "Отличный"
         }
-    }
+    },
+    "itemsTable": {
+        "no": "№",
+        "name": "Наименование",
+        "dimensions": "Д × Ш × В (см)",
+        "weight": "Вес",
+        "quantity": "Количество",
+        "allowRotation": "Вращение",
+        "true": "Да",
+        "false": "Нет",
+        "weightUnit": "{{value}} кг"
+    },
+    "customer_info": "Информация о клиенте",
+    "customer_name": "Имя клиента",
+    "customer_name_placeholder": "Введите имя клиента",
+    "customer_name_required": "Требуется имя клиента",
+    "customer_phone": "Телефон клиента",
+    "customer_phone_placeholder": "+7 999 999 99 99",
+    "customer_phone_required": "Требуется телефон клиента",
+    "shipment_customer_info": "Информация о грузополучателе",
+    "priority": "Приоритетность"
 }

@@ -71,35 +71,43 @@ export const createShipmentColumns = (t: TFunction): ColumnDef<Shipment>[] => [
             const statusConfig = {
                 draft: {
                     label: t("status_draft"),
-                    className: "bg-gray-400/10 text-gray-500",
+                    className:
+                        "dark:bg-gray-400/10 text-gray-500 dark:text-gray-400",
                 },
                 pending: {
                     label: t("status_pending"),
-                    className: "bg-yellow-400/10 text-yellow-500",
+                    className:
+                        "dark:bg-yellow-400/10 text-yellow-700 dark:text-yellow-400",
                 },
                 optimizing: {
                     label: t("status_optimizing"),
-                    className: "bg-purple-400/10 text-purple-500",
+                    className:
+                        "dark:bg-purple-400/10 text-purple-700 dark:text-purple-400",
                 },
                 ready: {
                     label: t("status_ready"),
-                    className: "bg-green-400/10 text-green-500",
+                    className:
+                        "dark:bg-green-400/10 bg-green-600 text-green-100 dark:text-green-400",
                 },
                 assigned: {
                     label: t("status_assigned"),
-                    className: "bg-blue-400/10 text-blue-500",
+                    className:
+                        "dark:bg-blue-400/10 text-blue-700 dark:text-blue-400",
                 },
                 in_progress: {
                     label: t("status_in_progress"),
-                    className: "bg-orange-400/10 text-orange-500",
+                    className:
+                        "dark:bg-orange-400/10 text-orange-700 dark:text-orange-400",
                 },
                 delivered: {
                     label: t("status_delivered"),
-                    className: "bg-emerald-400/10 text-emerald-500",
+                    className:
+                        "dark:bg-emerald-400/10 text-emerald-700 dark:text-emerald-400",
                 },
                 cancelled: {
                     label: t("status_cancelled"),
-                    className: "bg-red-400/10 text-red-500",
+                    className:
+                        "dark:bg-red-400/10 text-red-700 dark:text-red-400",
                 },
             };
 

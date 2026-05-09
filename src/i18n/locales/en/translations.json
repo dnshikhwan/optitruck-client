@@ -752,5 +752,25 @@
             "strong": "Strong",
             "excellent": "Excellent"
         }
-    }
+    },
+    "itemsTable": {
+        "no": "No.",
+        "name": "Name",
+        "dimensions": "L × W × H (cm)",
+        "weight": "Weight",
+        "quantity": "Quantity",
+        "allowRotation": "Allow Rotation",
+        "true": "Yes",
+        "false": "No",
+        "weightUnit": "{{value}} kg"
+    },
+    "customer_info": "Customer Info",
+    "customer_name": "Customer Name",
+    "customer_name_placeholder": "Enter customer name",
+    "customer_name_required": "Customer name is required",
+    "customer_phone": "Customer Phone",
+    "customer_phone_placeholder": "+7 999 999 99 99",
+    "customer_phone_required": "Customer phone is required",
+    "shipment_customer_info": "Customer Info",
+    "priority": "Priority"
 }

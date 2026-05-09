@@ -1,3 +1,5 @@
+// RouteMap.tsx
+import { useState, useEffect } from "react";
 import {
     MapContainer,
     TileLayer,
@@ -9,9 +11,8 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { RouteStop } from "@/interfaces/routingJob";
-import { useEffect } from "react";
+import { fetchRoadGeometry } from "@/utils/routeMap.utils";
 
-// Fix leaflet default marker icons broken by bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl:
@@ -52,6 +53,38 @@ function FitBounds({ positions }: { positions: [number, number][] }) {
     return null;
 }
 
+// Renders the road-following polyline, fetches geometry itself
+function RoadPolyline({ waypoints }: { waypoints: [number, number][] }) {
+    const [roadCoords, setRoadCoords] = useState<[number, number][]>([]);
+    const [error, setError] = useState(false);
+
+    useEffect(() => {
+        if (waypoints.length < 2) return;
+
+        fetchRoadGeometry(waypoints)
+            .then(setRoadCoords)
+            .catch(() => {
+                // Graceful fallback: straight lines are better than nothing
+                setError(true);
+                setRoadCoords(waypoints);
+            });
+    }, [waypoints]);
+
+    if (roadCoords.length === 0) return null;
+
+    return (
+        <Polyline
+            positions={roadCoords}
+            pathOptions={{
+                color: error ? "#ef4444" : "#6366f1",
+                weight: 4,
+                // Solid line for real roads — dashes imply "approximate"
+                dashArray: error ? "6 4" : undefined,
+            }}
+        />
+    );
+}
+
 export function RouteMap({
     stops,
     warehouseLat,
@@ -60,11 +93,10 @@ export function RouteMap({
 }: RouteMapProps) {
     const warehousePos: [number, number] = [warehouseLat, warehouseLng];
 
-    // full route: warehouse → stop1 → stop2 → ... → warehouse
-    const routePositions: [number, number][] = [
+    const waypoints: [number, number][] = [
         warehousePos,
         ...stops.map((s) => [s.lat, s.lng] as [number, number]),
-        warehousePos,
+        warehousePos, // return to warehouse
     ];
 
     const allPositions: [number, number][] = [
@@ -88,12 +120,10 @@ export function RouteMap({
             />
             <FitBounds positions={allPositions} />
 
-            {/* warehouse marker */}
             <Marker position={warehousePos} icon={warehouseIcon}>
                 <Popup>Warehouse (Start / End)</Popup>
             </Marker>
 
-            {/* stop markers */}
             {stops.map((stop, index) => (
                 <Marker
                     key={stop.shipmentId}
@@ -104,11 +134,7 @@ export function RouteMap({
                 </Marker>
             ))}
 
-            {/* route line */}
-            <Polyline
-                positions={routePositions}
-                pathOptions={{ color: "#6366f1", weight: 3, dashArray: "6 4" }}
-            />
+            <RoadPolyline waypoints={waypoints} />
         </MapContainer>
     );
 }

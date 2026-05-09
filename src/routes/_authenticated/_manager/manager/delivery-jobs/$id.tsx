@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { DashboardLayout } from "../../../../../../layouts";
-import { Box, Check, Dot, Download, Pin, Truck, User, X } from "lucide-react";
+import { Box, Dot, Download, Pin, Truck, User } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { DeliveryJob } from "@/interfaces/deliveryJob";
 import apiFetch from "@/utils/apiFetch";
@@ -39,8 +39,9 @@ import { toast } from "sonner";
 import type { RoutingJob } from "@/interfaces/routingJob";
 import { RouteMap } from "@/components/RouteMap";
 import { AlgorithmResultsDataTable } from "@/components/tables/algorithm_results/data-table";
-import { algorithmResultsColumns } from "@/components/tables/algorithm_results/columns";
+import { createAlgorithmResultsColumns } from "@/components/tables/algorithm_results/columns";
 import { CustomSpinner } from "@/components/custom-spinner";
+import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/delivery-jobs/$id",
@@ -51,19 +52,18 @@ export const Route = createFileRoute(
     },
 });
 
-const ALGO_LABELS = {
-    greedy_search: "Greedy Search",
-    h1: "H1",
-    bottom_left_fill: "Bottom Left Fill",
-    extreme_point: "Extreme Point",
-    grasp_vnd: "GRASP/VND",
-};
-
 function DeliveryJobsDetailPage() {
-    console.count("DeliveryJobsDetailPage render");
+    const { t } = useTranslation("deliveryJobDetail");
+    const { t: tAlgoComparison } = useTranslation("algoComparison");
+    const { t: tAlgo } = useTranslation();
+    const getAlgoLabel = (algo: string) =>
+        tAlgo(`algorithms.${algo}`, { defaultValue: algo });
+
     const { id } = Route.useParams();
     const [selectedAlgo, setSelectedAlgo] = useState("");
     const [selectedDriverId, setSelectedDriverId] = useState("");
+    const [showComparison, setShowComparison] = useState(false);
+    const [isManuallySelected, setIsManuallySelected] = useState(false);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
@@ -71,7 +71,7 @@ function DeliveryJobsDetailPage() {
         queryKey: [`delivery-job-${id}`],
         queryFn: async () => {
             const res = await apiFetch(`/delivery-jobs/${id}`);
-            if (!res.ok) throw new Error("Error fetching delivery job");
+            if (!res.ok) throw new Error("FETCH_FAILED");
             return res.json();
         },
         select: (response) => response.data,
@@ -88,13 +88,11 @@ function DeliveryJobsDetailPage() {
         [deliveryJob],
     );
 
-    // Then use it here instead of inline flatMap
     const { data: rawPackingResult } = useAlgorithmResult(
         deliveryJob?.packingJob?.id,
         selectedAlgo,
     );
 
-    // Build a lookup map ONCE — O(n) instead of O(n*m) later
     const shipmentItemsById = useMemo(() => {
         const map = new Map<string, any>();
         shipmentItems.forEach((si) => map.set(si.id, si));
@@ -142,7 +140,7 @@ function DeliveryJobsDetailPage() {
         queryKey: ["available-drivers"],
         queryFn: async () => {
             const res = await apiFetch("/drivers/available");
-            if (!res.ok) throw new Error("Error fetching drivers");
+            if (!res.ok) throw new Error("FETCH_FAILED");
             return res.json();
         },
         select: (response) => response.data,
@@ -167,38 +165,36 @@ function DeliveryJobsDetailPage() {
         queryKey: ["company-me"],
         queryFn: async () => {
             const res = await apiFetch("/companies/me");
-            if (!res.ok) throw new Error("Failed to fetch company");
+            if (!res.ok) throw new Error("FETCH_FAILED");
             const json = await res.json();
             return json.data;
         },
     });
 
-    const { mutate: retriggerRouting, isPending: isRetriggering } = useMutation(
-        {
-            mutationFn: async () => {
-                const res = await apiFetch(
-                    `/routing/delivery-job/${id}/retrigger`,
-                    {
-                        method: "POST",
-                    },
-                );
-                if (!res.ok) {
-                    const error = await res.json();
-                    throw new Error(error.message);
-                }
-                return res.json();
-            },
-            onSuccess: () => {
-                toast.success("Routing job retriggered");
-                queryClient.invalidateQueries({
-                    queryKey: [`routing-job-${id}`],
-                });
-            },
-            onError: (error) => {
-                toast.error(error.message);
-            },
-        },
-    );
+    // const { mutate: retriggerRouting, isPending: isRetriggering } = useMutation(
+    //     {
+    //         mutationFn: async () => {
+    //             const res = await apiFetch(
+    //                 `/routing/delivery-job/${id}/retrigger`,
+    //                 { method: "POST" },
+    //             );
+    //             if (!res.ok) {
+    //                 const error = await res.json();
+    //                 throw new Error(error.message);
+    //             }
+    //             return res.json();
+    //         },
+    //         onSuccess: () => {
+    //             toast.success(t("toast.routingRetriggered"));
+    //             queryClient.invalidateQueries({
+    //                 queryKey: [`routing-job-${id}`],
+    //             });
+    //         },
+    //         onError: (error) => {
+    //             toast.error(error.message);
+    //         },
+    //     },
+    // );
 
     const { mutate: assignDriver, isPending } = useMutation({
         mutationFn: async () => {
@@ -216,7 +212,7 @@ function DeliveryJobsDetailPage() {
             return res.json();
         },
         onSuccess: () => {
-            toast.success("Driver assigned successfully");
+            toast.success(t("toast.driverAssigned"));
             queryClient.invalidateQueries({ queryKey: [`delivery-job-${id}`] });
         },
         onError: (error) => {
@@ -239,7 +235,7 @@ function DeliveryJobsDetailPage() {
             return res.json();
         },
         onSuccess: () => {
-            toast.success("Algorithm result selected");
+            toast.success(t("toast.algorithmSelected"));
             queryClient.invalidateQueries({ queryKey: [`delivery-job-${id}`] });
         },
         onError: (error) => {
@@ -248,45 +244,38 @@ function DeliveryJobsDetailPage() {
     });
 
     const totalShipmentItems = deliveryJob?.shipments.reduce(
-        (total, shipment) => {
-            return (
-                total +
-                shipment.shipment_items.reduce((sum, item) => {
-                    return sum + item.quantity;
-                }, 0)
-            );
-        },
+        (total, shipment) =>
+            total +
+            shipment.shipment_items.reduce(
+                (sum, item) => sum + item.quantity,
+                0,
+            ),
         0,
     );
 
     const totalShipmentWeight = (deliveryJob?.shipments ?? []).reduce(
-        (total, shipment) => {
-            return (
-                total +
-                (shipment.shipment_items ?? []).reduce((sum, item) => {
-                    return sum + item.weight_kg * item.quantity;
-                }, 0)
-            );
-        },
+        (total, shipment) =>
+            total +
+            (shipment.shipment_items ?? []).reduce(
+                (sum, item) => sum + item.weight_kg * item.quantity,
+                0,
+            ),
         0,
     );
 
     const totalShipmentVolume = (deliveryJob?.shipments ?? []).reduce(
-        (total, shipment) => {
-            return (
-                total +
-                (shipment.shipment_items ?? []).reduce((sum, item) => {
-                    return (
-                        sum +
-                        (item.length_cm *
-                            item.width_cm *
-                            item.height_cm *
-                            item.quantity) /
-                            1000000
-                    );
-                }, 0)
-            );
-        },
+        (total, shipment) =>
+            total +
+            (shipment.shipment_items ?? []).reduce(
+                (sum, item) =>
+                    sum +
+                    (item.length_cm *
+                        item.width_cm *
+                        item.height_cm *
+                        item.quantity) /
+                        1000000,
+                0,
+            ),
         0,
     );
 
@@ -300,6 +289,7 @@ function DeliveryJobsDetailPage() {
     const handleSelectAlgo = useCallback(
         (algo: string) => {
             setSelectedAlgo(algo);
+            setIsManuallySelected(true);
             const result = deliveryJob?.packingJob.algorithmResults.find(
                 (r) => r.algorithm === algo,
             );
@@ -322,6 +312,8 @@ function DeliveryJobsDetailPage() {
 
     if (!deliveryJob) return null;
 
+    const shipmentCount = deliveryJob.shipments.length;
+
     return (
         <DashboardLayout>
             {/* Header */}
@@ -330,15 +322,14 @@ function DeliveryJobsDetailPage() {
                     <div className="flex flex-wrap items-center gap-1">
                         <h1 className="scroll-m-20 text-xl font-extrabold font-heading">
                             Delivery Job · DJ-
-                            {deliveryJob &&
-                                format(deliveryJob.createdAt, "yyyy")}
-                            -{id.substring(0, 6).toUpperCase()}
+                            {format(deliveryJob.createdAt, "yyyy")}-
+                            {id.substring(0, 6).toUpperCase()}
                         </h1>
                         <DeliveryJobStatusBadge status={deliveryJob.status} />
                     </div>
                     <CardDescription className="flex flex-wrap items-center gap-x-1 gap-y-1 mt-1">
                         <span>
-                            Created{" "}
+                            {t("header.created")}{" "}
                             {format(deliveryJob.createdAt, "dd MMMM yyyy")}
                         </span>
                         <Dot className="shrink-0" />
@@ -348,7 +339,11 @@ function DeliveryJobsDetailPage() {
                             {deliveryJob.truck.license_plate})
                         </span>
                         <Dot className="shrink-0" />
-                        <span>{deliveryJob.shipments.length} Shipment</span>
+                        <span>
+                            {t("header.shipmentCount", {
+                                count: shipmentCount,
+                            })}
+                        </span>
                     </CardDescription>
                 </div>
                 <Button
@@ -360,30 +355,32 @@ function DeliveryJobsDetailPage() {
                     }
                     variant="outline"
                 >
-                    <Download /> Export Report
+                    <Download /> {t("header.exportReport")}
                 </Button>
             </div>
 
-            {/* Stats — 2 cols mobile, 3 sm, 5 xl */}
+            {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
                 <Stat>
-                    <StatLabel>Total Items</StatLabel>
+                    <StatLabel>{t("stats.totalItems")}</StatLabel>
                     <StatValue>{totalShipmentItems}</StatValue>
                     <StatIndicator />
                     <StatDescription>
-                        across {deliveryJob.shipments.length} shipment
+                        {t("stats.totalItemsDesc", { count: shipmentCount })}
                     </StatDescription>
                 </Stat>
                 <Stat>
-                    <StatLabel>Total Item Weight</StatLabel>
+                    <StatLabel>{t("stats.totalWeight")}</StatLabel>
                     <StatValue>{totalShipmentWeight.toFixed(2)} kg</StatValue>
                     <StatIndicator />
                     <StatDescription>
-                        max {deliveryJob.truck.max_weight_kg} kg
+                        {t("stats.totalWeightDesc", {
+                            weight: deliveryJob.truck.max_weight_kg,
+                        })}
                     </StatDescription>
                 </Stat>
                 <Stat>
-                    <StatLabel>Total Item Volume</StatLabel>
+                    <StatLabel>{t("stats.totalVolume")}</StatLabel>
                     <StatValue>
                         {totalShipmentVolume.toFixed(2)} m<sup>3</sup>
                     </StatValue>
@@ -391,32 +388,41 @@ function DeliveryJobsDetailPage() {
                     <StatDescription>{deliveryJob.truck.model}</StatDescription>
                 </Stat>
                 <Stat>
-                    <StatLabel>Total Execution Time</StatLabel>
+                    <StatLabel>{t("stats.executionTime")}</StatLabel>
                     <StatIndicator />
                     <StatValue>
-                        {optimizationTimeTaken && optimizationTimeTaken >= 1000
-                            ? (optimizationTimeTaken / 1000).toFixed(2) + " s"
-                            : optimizationTimeTaken?.toFixed(2) + " ms"}
+                        {optimizationTimeTaken != null &&
+                        optimizationTimeTaken >= 1000
+                            ? t("stats.timeS", {
+                                  value: (optimizationTimeTaken / 1000).toFixed(
+                                      2,
+                                  ),
+                              })
+                            : t("stats.timeMs", {
+                                  value: optimizationTimeTaken?.toFixed(2),
+                              })}
                     </StatValue>
                     <StatDescription>
-                        Time taken to run packing & routing optimization
+                        {t("stats.executionTimeDesc")}
                     </StatDescription>
                 </Stat>
                 <Stat>
-                    <StatLabel>Selected Packing Algorithm</StatLabel>
+                    <StatLabel>{t("stats.selectedAlgo")}</StatLabel>
                     <StatIndicator />
                     <StatValue>
                         {deliveryJob.selectedResult
-                            ? ALGO_LABELS[
-                                  deliveryJob.selectedResult
-                                      .algorithm as keyof typeof ALGO_LABELS
-                              ]
+                            ? getAlgoLabel(deliveryJob.selectedResult.algorithm)
                             : "—"}
                     </StatValue>
                     <StatDescription>
                         {deliveryJob.selectedResult
-                            ? `${parseFloat(deliveryJob.selectedResult.volume_utilization).toFixed(1)}% volume utilization`
-                            : "Select an algorithm result below"}
+                            ? t("stats.selectedAlgoUtil", {
+                                  percent: parseFloat(
+                                      deliveryJob.selectedResult
+                                          .volume_utilization,
+                                  ).toFixed(1),
+                              })
+                            : t("stats.selectedAlgoEmpty")}
                     </StatDescription>
                 </Stat>
             </div>
@@ -429,7 +435,7 @@ function DeliveryJobsDetailPage() {
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
-                                Shipments ({deliveryJob.shipments.length})
+                                {t("shipments.title", { count: shipmentCount })}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-3">
@@ -465,22 +471,24 @@ function DeliveryJobsDetailPage() {
                                         </div>
                                         <div className="flex flex-col gap-1 shrink-0">
                                             <CardDescription>
-                                                {shipment.shipment_items.reduce(
-                                                    (sum, item) =>
-                                                        sum + item.quantity,
-                                                    0,
-                                                )}{" "}
-                                                items
+                                                {t("shipments.items", {
+                                                    count: shipment.shipment_items.reduce(
+                                                        (sum, item) =>
+                                                            sum + item.quantity,
+                                                        0,
+                                                    ),
+                                                })}
                                             </CardDescription>
                                             <CardDescription>
-                                                {shipment.shipment_items.reduce(
-                                                    (sum, item) =>
-                                                        sum +
-                                                        item.weight_kg *
-                                                            item.quantity,
-                                                    0,
-                                                )}{" "}
-                                                kg
+                                                {t("shipments.weight", {
+                                                    weight: shipment.shipment_items.reduce(
+                                                        (sum, item) =>
+                                                            sum +
+                                                            item.weight_kg *
+                                                                item.quantity,
+                                                        0,
+                                                    ),
+                                                })}
                                             </CardDescription>
                                         </div>
                                     </CardContent>
@@ -494,14 +502,13 @@ function DeliveryJobsDetailPage() {
                         <CardHeader>
                             <div className="flex flex-wrap items-center justify-between gap-2">
                                 <CardDescription className="text-xs uppercase tracking-widest">
-                                    3D Packing View
+                                    {t("packingView.title")}
                                 </CardDescription>
                                 <div className="flex flex-wrap items-center gap-2">
                                     <CardDescription>
-                                        Showing:{" "}
-                                        {ALGO_LABELS[
-                                            selectedAlgo as keyof typeof ALGO_LABELS
-                                        ] ?? "None selected"}
+                                        {t("packingView.showing")}{" "}
+                                        {getAlgoLabel(selectedAlgo) ||
+                                            t("packingView.noneSelected")}
                                     </CardDescription>
                                     {selectedAlgo &&
                                         selectedAlgo !==
@@ -524,8 +531,10 @@ function DeliveryJobsDetailPage() {
                                                 size="sm"
                                             >
                                                 {isSelecting
-                                                    ? "Saving..."
-                                                    : "Confirm Selection"}
+                                                    ? t("packingView.saving")
+                                                    : t(
+                                                          "packingView.confirmSelection",
+                                                      )}
                                             </Button>
                                         )}
                                 </div>
@@ -543,10 +552,10 @@ function DeliveryJobsDetailPage() {
                                         <Box className="text-muted-foreground w-8 h-8" />
                                     </div>
                                     <CardDescription>
-                                        Select an algorithm result above
+                                        {t("packingView.emptyTitle")}
                                     </CardDescription>
                                     <CardDescription className="text-xs">
-                                        to preview the 3D packing arrangement
+                                        {t("packingView.emptyDesc")}
                                     </CardDescription>
                                 </div>
                             )}
@@ -558,28 +567,14 @@ function DeliveryJobsDetailPage() {
                         <CardHeader>
                             <div className="flex flex-wrap items-center justify-between gap-2">
                                 <CardDescription className="text-xs uppercase tracking-widest">
-                                    Routing Optimization
+                                    {t("routing.title")}
                                 </CardDescription>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={
-                                        isRetriggering ||
-                                        routingJob?.status === "running" ||
-                                        routingJob?.status === "pending"
-                                    }
-                                    onClick={() => retriggerRouting()}
-                                >
-                                    {isRetriggering
-                                        ? "Retriggering..."
-                                        : "Re-run Routing"}
-                                </Button>
                             </div>
                         </CardHeader>
                         <CardContent>
                             {!routingJob && (
                                 <CardDescription className="text-xs">
-                                    No routing job found for this delivery job.
+                                    {t("routing.notFound")}
                                 </CardDescription>
                             )}
                             {(routingJob?.status === "pending" ||
@@ -587,14 +582,13 @@ function DeliveryJobsDetailPage() {
                                 <div className="flex items-center gap-2 text-yellow-500">
                                     <Spinner className="h-4 w-4" />
                                     <CardDescription className="text-xs text-yellow-500">
-                                        Routing in progress...
+                                        {t("routing.inProgress")}
                                     </CardDescription>
                                 </div>
                             )}
                             {routingJob?.status === "failed" && (
                                 <CardDescription className="text-xs text-red-500">
-                                    Routing failed. Make sure all shipments have
-                                    coordinates set, then re-run.
+                                    {t("routing.failed")}
                                 </CardDescription>
                             )}
                             {routingJob?.status === "completed" &&
@@ -628,7 +622,7 @@ function DeliveryJobsDetailPage() {
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
-                                Driver Assignment
+                                {t("driverAssignment.title")}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-3">
@@ -660,50 +654,46 @@ function DeliveryJobsDetailPage() {
                                     </div>
                                 </div>
                             ) : (
-                                <>
-                                    <div className="flex flex-wrap items-center gap-3">
-                                        <Select
-                                            onValueChange={setSelectedDriverId}
-                                            value={selectedDriverId}
-                                        >
-                                            <SelectTrigger className="flex-1 min-w-40">
-                                                <SelectValue placeholder="Select a driver" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectGroup>
-                                                    {drivers.map((driver) => (
-                                                        <SelectItem
-                                                            key={driver.id}
-                                                            value={driver.id}
-                                                        >
-                                                            {driver.first_name +
-                                                                " " +
-                                                                driver.last_name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectGroup>
-                                            </SelectContent>
-                                        </Select>
-                                        <Button
-                                            disabled={
-                                                !selectedDriverId ||
-                                                !selectedAlgo ||
-                                                isPending
-                                            }
-                                            onClick={() => assignDriver()}
-                                        >
-                                            {isPending
-                                                ? "Assigning..."
-                                                : "Confirm Assignment"}
-                                        </Button>
-                                    </div>
-                                    {!selectedAlgo && (
-                                        <p className="text-xs text-yellow-500">
-                                            ⚠ Select an algorithm result before
-                                            assigning a driver
-                                        </p>
-                                    )}
-                                </>
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <Select
+                                        onValueChange={setSelectedDriverId}
+                                        value={selectedDriverId}
+                                    >
+                                        <SelectTrigger className="flex-1 min-w-40">
+                                            <SelectValue
+                                                placeholder={t(
+                                                    "driverAssignment.selectPlaceholder",
+                                                )}
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                {drivers.map((driver) => (
+                                                    <SelectItem
+                                                        key={driver.id}
+                                                        value={driver.id}
+                                                    >
+                                                        {driver.first_name +
+                                                            " " +
+                                                            driver.last_name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                    <Button
+                                        disabled={
+                                            !deliveryJob.selectedResult ||
+                                            !selectedDriverId ||
+                                            isPending
+                                        }
+                                        onClick={() => assignDriver()}
+                                    >
+                                        {isPending
+                                            ? t("driverAssignment.assigning")
+                                            : t("driverAssignment.confirm")}
+                                    </Button>
+                                </div>
                             )}
                         </CardContent>
                     </Card>
@@ -712,7 +702,7 @@ function DeliveryJobsDetailPage() {
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
-                                Truck Info
+                                {t("truckInfo.title")}
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="flex flex-col gap-3">
@@ -730,14 +720,16 @@ function DeliveryJobsDetailPage() {
                             <div className="grid grid-cols-3 gap-4">
                                 <Stat>
                                     <StatDescription>
-                                        Max Weight
+                                        {t("truckInfo.maxWeight")}
                                     </StatDescription>
                                     <StatLabel>
                                         {deliveryJob.truck.max_weight_kg} kg
                                     </StatLabel>
                                 </Stat>
                                 <Stat>
-                                    <StatDescription>Volume</StatDescription>
+                                    <StatDescription>
+                                        {t("truckInfo.volume")}
+                                    </StatDescription>
                                     <StatLabel>
                                         {(
                                             (deliveryJob.truck.length_cm *
@@ -750,11 +742,11 @@ function DeliveryJobsDetailPage() {
                                 </Stat>
                                 <Stat>
                                     <StatDescription>
-                                        L x W x H (cm)
+                                        {t("truckInfo.dimensions")}
                                     </StatDescription>
                                     <StatLabel>
-                                        {deliveryJob.truck.length_cm} x{" "}
-                                        {deliveryJob.truck.width_cm} x{" "}
+                                        {deliveryJob.truck.length_cm} ×{" "}
+                                        {deliveryJob.truck.width_cm} ×{" "}
                                         {deliveryJob.truck.height_cm}
                                     </StatLabel>
                                 </Stat>
@@ -763,34 +755,66 @@ function DeliveryJobsDetailPage() {
                     </Card>
 
                     {/* Algorithm Results */}
-                    <Card className="bg-transparent">
+                    <Card>
                         <CardHeader>
-                            <div className="flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center justify-between gap-2">
                                 <CardDescription className="text-xs uppercase tracking-widest">
-                                    Algorithm Results
+                                    {t("packingResult.title")}
                                 </CardDescription>
-                                {selectedAlgo ? (
-                                    <Badge>
-                                        <Check />
-                                        {ALGO_LABELS[
-                                            selectedAlgo as keyof typeof ALGO_LABELS
-                                        ] ?? "None selected"}{" "}
-                                        selected
-                                    </Badge>
-                                ) : (
-                                    <Badge>
-                                        <X /> None selected
-                                    </Badge>
-                                )}
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setShowComparison((v) => !v)}
+                                >
+                                    {showComparison
+                                        ? t("packingResult.hideComparison")
+                                        : t("packingResult.viewComparison")}
+                                </Button>
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <AlgorithmResultsDataTable
-                                columns={algorithmResultsColumns}
-                                data={deliveryJob.packingJob.algorithmResults}
-                                selectedAlgo={selectedAlgo}
-                                onSelectAlgo={handleSelectAlgo}
-                            />
+                            {deliveryJob.selectedResult && (
+                                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 mb-3">
+                                    <div>
+                                        <p className="text-sm font-semibold">
+                                            {getAlgoLabel(
+                                                deliveryJob.selectedResult
+                                                    .algorithm,
+                                            )}
+                                        </p>
+                                        <CardDescription className="text-xs">
+                                            {isManuallySelected
+                                                ? t(
+                                                      "packingResult.manuallySelected",
+                                                  )
+                                                : t(
+                                                      "packingResult.autoSelected",
+                                                  )}
+                                        </CardDescription>
+                                    </div>
+                                    <Badge>
+                                        {t("packingResult.utilization", {
+                                            percent: parseFloat(
+                                                deliveryJob.selectedResult
+                                                    .volume_utilization,
+                                            ).toFixed(1),
+                                        })}
+                                    </Badge>
+                                </div>
+                            )}
+
+                            {showComparison && (
+                                <AlgorithmResultsDataTable
+                                    columns={createAlgorithmResultsColumns(
+                                        tAlgoComparison,
+                                    )}
+                                    data={
+                                        deliveryJob.packingJob.algorithmResults
+                                    }
+                                    selectedAlgo={selectedAlgo}
+                                    onSelectAlgo={handleSelectAlgo}
+                                />
+                            )}
                         </CardContent>
                     </Card>
 
@@ -798,7 +822,7 @@ function DeliveryJobsDetailPage() {
                     <Card className="bg-transparent">
                         <CardHeader>
                             <CardDescription className="text-xs uppercase tracking-widest">
-                                Optimized stop order
+                                {t("stopOrder.title")}
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -834,7 +858,9 @@ function DeliveryJobsDetailPage() {
                                                         />
                                                         <p className="text-sm font-medium truncate">
                                                             {shipment?.name ||
-                                                                "Unknown Shipment"}
+                                                                t(
+                                                                    "stopOrder.unknownShipment",
+                                                                )}
                                                         </p>
                                                     </div>
                                                     <div className="flex items-center gap-1 mt-1">

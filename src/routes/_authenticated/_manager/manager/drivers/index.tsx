@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "../../../../../../layouts";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Check, CheckLine, Copy, Plus, TruckIcon, X } from "lucide-react";
+import { Check, Copy, Plus, TruckIcon } from "lucide-react";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import {
     Dialog,
@@ -16,7 +16,6 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Separator } from "@/components/ui/separator";
 import { useMemo, useState } from "react";
-import StatisticsCard from "@/components/statistics-card";
 import {
     createDriverColumns,
     type Driver,
@@ -27,6 +26,12 @@ import { getAccessToken } from "@/utils/tokenStore";
 import apiFetch from "@/utils/apiFetch";
 import { Card, CardContent } from "@/components/ui/card";
 import { CustomSpinner } from "@/components/custom-spinner";
+import {
+    Stat,
+    StatIndicator,
+    StatLabel,
+    StatValue,
+} from "@/components/ui/stat";
 
 export const Route = createFileRoute(
     "/_authenticated/_manager/manager/drivers/",
@@ -99,20 +104,19 @@ function DriversPage() {
             icon: <TruckIcon className="size-4" />,
             value: totalDrivers.toString(),
             title: t("total_drivers"),
-            changePercentage: "+18.2%",
         },
-        {
-            icon: <CheckLine className="size-4" />,
-            value: "12",
-            title: t("active_drivers"),
-            changePercentage: "-8.7%",
-        },
-        {
-            icon: <X className="size-4" />,
-            value: "8",
-            title: t("on_duty_drivers"),
-            changePercentage: "-8.7%",
-        },
+        // {
+        //     icon: <CheckLine className="size-4" />,
+        //     value: "12",
+        //     title: t("active_drivers"),
+        //     changePercentage: "-8.7%",
+        // },
+        // {
+        //     icon: <X className="size-4" />,
+        //     value: "8",
+        //     title: t("on_duty_drivers"),
+        //     changePercentage: "-8.7%",
+        // },
     ];
 
     return (
@@ -165,12 +169,13 @@ function DriversPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {StatisticsCardData.map((card, index) => (
-                    <StatisticsCard
-                        key={index}
-                        icon={card.icon}
-                        title={card.title}
-                        value={card.value}
-                    />
+                    <Stat key={index}>
+                        <StatLabel>{card.title}</StatLabel>
+                        <StatValue>{card.value}</StatValue>
+                        <StatIndicator variant={"icon"} color={"info"}>
+                            {card.icon}
+                        </StatIndicator>
+                    </Stat>
                 ))}
             </div>
             <Card>

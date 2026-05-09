@@ -1,8 +1,7 @@
 import * as THREE from "three";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, Text } from "@react-three/drei";
+import { OrbitControls, Text, useGLTF } from "@react-three/drei";
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import {
     ArrowLeft,
@@ -98,6 +97,8 @@ interface Palette {
     legendHoverBg: string;
     legendSelectedBg: string;
     legendBorderColor: string;
+    gridColor: string;
+    gridOpacity: number;
 }
 
 const PALETTES: Record<"dark" | "light", Palette> = {
@@ -133,16 +134,18 @@ const PALETTES: Record<"dark" | "light", Palette> = {
         legendHoverBg: "rgba(255,255,255,0.08)",
         legendSelectedBg: "rgba(59,130,246,0.45)",
         legendBorderColor: "rgba(255,255,255,0.1)",
+        gridColor: "#38BDF8",
+        gridOpacity: 0.08,
     },
     light: {
         // Scene — pale overcast sky feel
-        sceneBg: "#dde8f2",
+        sceneBg: "#f5f5f4",
         // Truck container
         containerFill: "#2563eb",
         containerOpacity: 0.06,
         frontWallOpacity: 0.15,
         topWallOpacity: 0.08,
-        floorColor: "#b8cfe4",
+        floorColor: "#e7e5e4",
         edgeColor: "#1d4ed8",
         centerLineOpacity: 0.5,
         // Labels
@@ -166,6 +169,8 @@ const PALETTES: Record<"dark" | "light", Palette> = {
         legendHoverBg: "rgba(15,23,42,0.06)",
         legendSelectedBg: "rgba(59,130,246,0.18)",
         legendBorderColor: "rgba(15,23,42,0.1)",
+        gridColor: "#1d4ed8",
+        gridOpacity: 0.12,
     },
 };
 
@@ -255,135 +260,48 @@ function getOrCreateTextures(color_hex: string, name: string) {
     return entry;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TruckCabAndTires
-// ─────────────────────────────────────────────────────────────────────────────
-
-function TruckCabAndTires({
+// truck cab
+function TruckCab({
     truck,
-    palette,
 }: {
     truck: TruckDimensions;
-    palette: Palette;
+    platformHeight: number;
 }) {
-    const hw = truck.width_cm / 2;
+    const { scene } = useGLTF("/models/man-truck.glb");
     const hh = truck.height_cm / 2;
     const hl = truck.length_cm / 2;
 
-    const cabLength = Math.min(truck.length_cm * 0.3, truck.height_cm * 1.1);
-    const cabHeight = truck.height_cm * 0.78;
-    const cabHalfL = cabLength / 2;
-    const cabHalfH = cabHeight / 2;
+    const { cloned, scale, cabScaledLength } = useMemo(() => {
+        const c = scene.clone();
+        c.traverse((child) => {
+            if ((child as THREE.Mesh).isMesh) {
+                const mesh = child as THREE.Mesh;
+                const mat = (
+                    mesh.material as THREE.MeshStandardMaterial
+                ).clone();
+                mat.metalness = 0.4;
+                mat.roughness = 0.6;
+                mesh.material = mat;
+            }
+        });
+        const box = new THREE.Box3().setFromObject(c);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const sc = truck.width_cm / size.x;
+        return { cloned: c, scale: sc, cabScaledLength: size.z * sc };
+    }, [scene, truck.width_cm]);
 
-    const cabCenterZ = -hl - cabHalfL;
-    const cabCenterY = -hh + cabHalfH;
-
-    const cabEdgesGeo = useMemo(
-        () =>
-            new THREE.EdgesGeometry(
-                new THREE.BoxGeometry(truck.width_cm, cabHeight, cabLength),
-            ),
-        [truck.width_cm, cabHeight, cabLength],
-    );
-
-    const tireRadius = truck.height_cm * 0.25;
-    const tireThick = truck.width_cm * 0.25;
-    const tireY = -hh;
-
-    const axles = [-hl - cabLength * 0.55, hl - tireRadius * 2.5];
-
-    const tireXs = [-(hw + tireThick * 0.5), hw + tireThick * 0.5];
-
+    // Back of cab (coupling) aligns with container front face at z = -hl
     return (
-        <group>
-            {/* Cab body */}
-            <mesh position={[0, cabCenterY, cabCenterZ]}>
-                <boxGeometry args={[truck.width_cm, cabHeight, cabLength]} />
-                <meshBasicMaterial
-                    color={palette.cabFill}
-                    transparent
-                    opacity={palette.cabOpacity}
-                />
-            </mesh>
-
-            {/* Cab edges */}
-            <lineSegments
-                geometry={cabEdgesGeo}
-                position={[0, cabCenterY, cabCenterZ]}
-            >
-                <lineBasicMaterial color={palette.cabEdgeColor} />
-            </lineSegments>
-
-            {/* Windshield */}
-            <mesh
-                position={[
-                    0,
-                    cabCenterY + cabHalfH * 0.1,
-                    cabCenterZ - cabHalfL + 0.5,
-                ]}
-                rotation={[0.12, 0, 0]}
-            >
-                <planeGeometry
-                    args={[truck.width_cm * 0.72, cabHeight * 0.55]}
-                />
-                <meshBasicMaterial
-                    color={palette.windshieldColor}
-                    transparent
-                    opacity={0.22}
-                    side={THREE.DoubleSide}
-                />
-            </mesh>
-
-            {/* Headlights */}
-            {([-hw * 0.55, hw * 0.55] as number[]).map((x) => (
-                <mesh
-                    key={x}
-                    position={[
-                        x,
-                        cabCenterY - cabHalfH * 0.3,
-                        cabCenterZ - cabHalfL + 0.3,
-                    ]}
-                >
-                    <planeGeometry
-                        args={[truck.width_cm * 0.12, truck.height_cm * 0.06]}
-                    />
-                    <meshBasicMaterial
-                        color="#fef9c3"
-                        transparent
-                        opacity={0.9}
-                        side={THREE.DoubleSide}
-                    />
-                </mesh>
-            ))}
-
-            {/* Tires */}
-            {axles.map((z) =>
-                tireXs.map((x) => (
-                    <group key={`${z}-${x}`} position={[x, tireY, z]}>
-                        <mesh rotation={[0, 0, Math.PI / 2]}>
-                            <cylinderGeometry
-                                args={[tireRadius, tireRadius, tireThick, 20]}
-                            />
-                            <meshBasicMaterial color="#111827" />
-                        </mesh>
-                        <mesh rotation={[0, 0, Math.PI / 2]}>
-                            <cylinderGeometry
-                                args={[
-                                    tireRadius * 0.52,
-                                    tireRadius * 0.52,
-                                    tireThick + 1,
-                                    12,
-                                ]}
-                            />
-                            <meshBasicMaterial color="#4b5563" />
-                        </mesh>
-                    </group>
-                )),
-            )}
-        </group>
+        <primitive
+            object={cloned}
+            position={[0, -hh, -hl - cabScaledLength / 1000]}
+            scale={scale}
+            rotation={[0, Math.PI, 0]}
+        />
     );
 }
-
+useGLTF.preload("/models/man-truck.glb");
 // ─────────────────────────────────────────────────────────────────────────────
 // TruckContainer
 // ─────────────────────────────────────────────────────────────────────────────
@@ -415,6 +333,28 @@ function TruckContainer({
         [hh],
     );
 
+    const gridDivisions = Math.max(4, Math.round(truck.width_cm / 50));
+
+    const gridHelper = useMemo(() => {
+        const helper = new THREE.GridHelper(
+            truck.width_cm,
+            gridDivisions,
+            new THREE.Color(palette.gridColor),
+            new THREE.Color(palette.gridColor),
+        );
+        helper.scale.z = truck.length_cm / truck.width_cm;
+        const mat = helper.material as THREE.LineBasicMaterial;
+        mat.opacity = palette.gridOpacity;
+        mat.transparent = true;
+        return helper;
+    }, [
+        truck.width_cm,
+        truck.length_cm,
+        gridDivisions,
+        palette.gridColor,
+        palette.gridOpacity,
+    ]);
+
     return (
         <group>
             {/* Translucent box body */}
@@ -435,6 +375,15 @@ function TruckContainer({
             <lineSegments geometry={edgesGeo}>
                 <lineBasicMaterial color={palette.edgeColor} />
             </lineSegments>
+
+            {/* solid floor */}
+            <mesh position={[0, -hh + 1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <planeGeometry args={[truck.width_cm, truck.length_cm]} />
+                <meshBasicMaterial
+                    color={palette.floorColor}
+                    side={THREE.DoubleSide}
+                />
+            </mesh>
 
             {/* Front wall (more opaque so depth is readable) */}
             <mesh position={[0, 0, -hl]}>
@@ -460,14 +409,7 @@ function TruckContainer({
                 />
             </mesh>
 
-            {/* Floor */}
-            <mesh position={[0, -hh + 0.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-                <planeGeometry args={[truck.width_cm, truck.length_cm]} />
-                <meshBasicMaterial
-                    color={palette.floorColor}
-                    side={THREE.DoubleSide}
-                />
-            </mesh>
+            <primitive object={gridHelper} position={[0, -hh + 2, 0]} />
 
             {/* FRONT label */}
             <Text
@@ -487,7 +429,6 @@ function TruckContainer({
                 color={palette.rearLabel}
                 anchorX="center"
                 anchorY="middle"
-                rotation={[0, Math.PI, 0]}
             >
                 REAR
             </Text>
@@ -507,7 +448,7 @@ function TruckContainer({
                 />
             </lineSegments>
 
-            <TruckCabAndTires truck={truck} palette={palette} />
+            {/* <TruckCabAndTires truck={truck} palette={palette} /> */}
         </group>
     );
 }
@@ -714,6 +655,198 @@ function CargoBox({
     );
 }
 
+function CartesianEnvironment({
+    truck,
+    palette,
+    platformHeight,
+}: {
+    truck: TruckDimensions;
+    palette: Palette;
+    platformHeight: number;
+}) {
+    const hw = truck.width_cm / 2;
+    const hh = truck.height_cm / 2;
+    const hl = truck.length_cm / 2;
+    const floorY = -hh;
+    const containerFloorY = floorY + platformHeight;
+
+    const CELL = 100; // 1 m per cell
+    const pad = Math.max(truck.length_cm, truck.width_cm) * 1.2;
+    const floorW = truck.width_cm + pad * 2;
+    const floorD = truck.length_cm + pad * 2;
+    const wallH = truck.height_cm * 1.3;
+
+    const floorLines = useMemo(() => {
+        const pts: number[] = [];
+        const hw2 = floorW / 2;
+        const hd2 = floorD / 2;
+        const nW = Math.ceil(hw2 / CELL);
+        const nD = Math.ceil(hd2 / CELL);
+        for (let i = -nW; i <= nW; i++) {
+            const x = i * CELL;
+            pts.push(x, 0, -hd2, x, 0, hd2);
+        }
+        for (let j = -nD; j <= nD; j++) {
+            const z = j * CELL;
+            pts.push(-hw2, 0, z, hw2, 0, z);
+        }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+        return g;
+    }, [floorW, floorD]);
+
+    const backWallLines = useMemo(() => {
+        const pts: number[] = [];
+        const hw2 = floorW / 2;
+        const nW = Math.ceil(hw2 / CELL);
+        const nH = Math.ceil(wallH / CELL);
+        for (let i = -nW; i <= nW; i++) {
+            const x = i * CELL;
+            pts.push(x, 0, 0, x, wallH, 0);
+        }
+        for (let j = 0; j <= nH; j++) {
+            const y = j * CELL;
+            if (y <= wallH) pts.push(-hw2, y, 0, hw2, y, 0);
+        }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+        return g;
+    }, [floorW, wallH]);
+
+    const sideWallLines = useMemo(() => {
+        const pts: number[] = [];
+        const hd2 = floorD / 2;
+        const nD = Math.ceil(hd2 / CELL);
+        const nH = Math.ceil(wallH / CELL);
+        for (let j = -nD; j <= nD; j++) {
+            const z = j * CELL;
+            pts.push(0, 0, z, 0, wallH, z);
+        }
+        for (let k = 0; k <= nH; k++) {
+            const y = k * CELL;
+            if (y <= wallH) pts.push(0, y, -hd2, 0, y, hd2);
+        }
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+        return g;
+    }, [floorD, wallH]);
+
+    const c = palette.gridColor;
+    const o = palette.gridOpacity;
+    const fs = Math.max(truck.height_cm * 0.12, 30);
+
+    const zTicks = useMemo(() => {
+        const steps = Math.ceil(truck.length_cm / CELL);
+        return Array.from({ length: steps + 1 }, (_, i) => ({
+            pos: -hl + i * CELL,
+            label: String(i),
+        }));
+    }, [truck.length_cm, hl]);
+
+    const xTicks = useMemo(() => {
+        const steps = Math.ceil(truck.width_cm / CELL);
+        return Array.from({ length: steps + 1 }, (_, i) => ({
+            pos: -hw + i * CELL,
+            label: String(i),
+        }));
+    }, [truck.width_cm, hw]);
+
+    const yTicks = useMemo(() => {
+        const steps = Math.ceil(truck.height_cm / CELL);
+        return Array.from({ length: steps + 1 }, (_, i) => ({
+            pos: i * CELL,
+            label: String(i),
+        }));
+    }, [truck.height_cm]);
+
+    return (
+        <group>
+            <mesh position={[0, floorY - 1, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                <planeGeometry args={[floorW, floorD]} />
+                <meshBasicMaterial
+                    color={palette.floorColor}
+                    side={THREE.DoubleSide}
+                />
+            </mesh>
+            {/* Floor grid */}
+            <lineSegments geometry={floorLines} position={[0, floorY, 0]}>
+                <lineBasicMaterial
+                    color={c}
+                    transparent
+                    opacity={o}
+                    depthWrite={false}
+                />
+            </lineSegments>
+
+            {/* Back wall (z = -hl, front of truck / cab side) */}
+            <group position={[0, floorY, -hl]}>
+                <lineSegments geometry={backWallLines}>
+                    <lineBasicMaterial
+                        color={c}
+                        transparent
+                        opacity={o}
+                        depthWrite={false}
+                    />
+                </lineSegments>
+            </group>
+
+            {/* Left side wall (x = -hw) */}
+            <group position={[-hw, floorY, 0]}>
+                <lineSegments geometry={sideWallLines}>
+                    <lineBasicMaterial
+                        color={c}
+                        transparent
+                        opacity={o}
+                        depthWrite={false}
+                    />
+                </lineSegments>
+            </group>
+
+            {/* Z axis labels — along left edge of floor */}
+            {zTicks.map(({ pos, label }) => (
+                <Text
+                    key={`z-${label}`}
+                    position={[-hw - fs * 1.8, containerFloorY, pos]}
+                    fontSize={fs}
+                    color={c}
+                    anchorX="right"
+                    anchorY="middle"
+                >
+                    {label}
+                </Text>
+            ))}
+
+            {/* X axis labels — along front edge of floor */}
+            {xTicks.map(({ pos, label }) => (
+                <Text
+                    key={`x-${label}`}
+                    position={[pos, containerFloorY, -hl - fs * 1.8]}
+                    fontSize={fs}
+                    color={c}
+                    anchorX="center"
+                    anchorY="top"
+                >
+                    {label}
+                </Text>
+            ))}
+
+            {/* Y axis labels — along back-left vertical edge */}
+            {yTicks.map(({ pos, label }) => (
+                <Text
+                    key={`y-${label}`}
+                    position={[-hw - fs * 1.8, containerFloorY + pos, -hl]}
+                    fontSize={fs}
+                    color={c}
+                    anchorX="right"
+                    anchorY="middle"
+                >
+                    {label}
+                </Text>
+            ))}
+        </group>
+    );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Scene — everything that lives inside the Three.js Canvas
 // ─────────────────────────────────────────────────────────────────────────────
@@ -745,9 +878,21 @@ function Scene({
         scene.background = new THREE.Color(palette.sceneBg);
         invalidate();
     }, [palette.sceneBg, scene, invalidate]);
+    const PLATFORM_HEIGHT = 90;
 
     return (
         <>
+            <ambientLight intensity={1.5} />
+            <directionalLight
+                position={[-500, 800, -600]}
+                intensity={2}
+                color="#ffffff"
+            />
+            <directionalLight
+                position={[500, 400, -800]}
+                intensity={1.2}
+                color="#cce0ff"
+            />
             <ambientLight color="#8aaed4" intensity={0.6} />
             <directionalLight
                 position={[400, 600, 300]}
@@ -759,29 +904,34 @@ function Scene({
                 color="#1a3a6a"
                 intensity={0.5}
             />
+            <CartesianEnvironment
+                truck={truck}
+                palette={palette}
+                platformHeight={PLATFORM_HEIGHT}
+            />
+            <group position={[0, PLATFORM_HEIGHT, 0]}>
+                <TruckContainer truck={truck} palette={palette} />
+                {result?.placedItems.map((placed, i) => {
+                    const itemShipmentId = placed.item.shipmentId;
+                    const isSelected = selectedShipmentId === itemShipmentId;
+                    const isDimmed = selectedShipmentId !== "" && !isSelected;
+                    return (
+                        <CargoBox
+                            key={`${placed.item.id}-${i}`}
+                            placed={placed}
+                            truckHalfW={hw}
+                            truckHalfH={hh}
+                            truckHalfL={hl}
+                            isSelected={isSelected}
+                            isDimmed={isDimmed}
+                            palette={palette}
+                            onClick={() => onShipmentSelect(itemShipmentId)}
+                        />
+                    );
+                })}
+            </group>
 
-            <TruckContainer truck={truck} palette={palette} />
-
-            {result?.placedItems.map((placed, i) => {
-                const itemShipmentId = placed.item.shipmentId;
-                const isSelected = selectedShipmentId === itemShipmentId;
-                const isDimmed = selectedShipmentId !== "" && !isSelected;
-
-                return (
-                    <CargoBox
-                        key={`${placed.item.id}-${i}`}
-                        placed={placed}
-                        truckHalfW={hw}
-                        truckHalfH={hh}
-                        truckHalfL={hl}
-                        isSelected={isSelected}
-                        isDimmed={isDimmed}
-                        palette={palette}
-                        onClick={() => onShipmentSelect(itemShipmentId)}
-                    />
-                );
-            })}
-
+            <TruckCab truck={truck} platformHeight={PLATFORM_HEIGHT} />
             <OrbitControls
                 enableDamping
                 dampingFactor={0.06}
@@ -807,12 +957,25 @@ export function PackingViewer({
     // useTheme comes from next-themes, which shadcn sets up automatically.
     // resolvedTheme is preferred over theme because it resolves "system" to the
     // actual OS preference — so your viewer always gets "dark" or "light", never "system".
-    const { resolvedTheme } = useTheme();
-    const palette = PALETTES[resolvedTheme === "light" ? "light" : "dark"];
-
+    const [isDark, setIsDark] = useState(() =>
+        document.documentElement.classList.contains("dark"),
+    );
     const [selectedShipmentId, setSelectedShipmentId] = useState<string>("");
     const containerRef = useRef<HTMLDivElement>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setIsDark(document.documentElement.classList.contains("dark"));
+        });
+        observer.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ["class"],
+        });
+        return () => observer.disconnect();
+    }, []);
+
+    const palette = PALETTES[isDark ? "dark" : "light"];
 
     const diagonal = Math.sqrt(
         truck.width_cm ** 2 + truck.height_cm ** 2 + truck.length_cm ** 2,
@@ -932,7 +1095,7 @@ export function PackingViewer({
             {/* Three.js Canvas — frameloop="demand" means it only re-renders when
                 invalidate() is called (e.g. on OrbitControls change), saving GPU. */}
             <Canvas
-                key={resolvedTheme ?? "dark"}
+                key={isDark ? "dark" : "light"}
                 frameloop="demand"
                 camera={{
                     fov: 50,
